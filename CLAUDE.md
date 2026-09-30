@@ -132,6 +132,10 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   Los colores del diseño están como clases de Tailwind en `src/app/globals.css`
   (`bg-fondo`, `text-tinta`, `bg-naranja`, `text-verde`, `bg-verde-suave`, `text-ambar`, `bg-ambar-suave`, `bg-tienda`)
   y las tipografías como `font-titulo` (Bricolage Grotesque) y `font-sans` (Figtree).
+- 2026-09-30: Supabase conectado (proyecto en São Paulo). Datos en `.env.local` (no se sube a GitHub):
+  `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Las conexiones se crean con
+  `crearClienteNavegador()` (`src/lib/supabase/client.ts`) y `crearClienteServidor()` (`src/lib/supabase/server.ts`).
+  La clave secreta de Supabase nunca va en la app ni en el chat.
 
 ## Pendiente por decidir
 
