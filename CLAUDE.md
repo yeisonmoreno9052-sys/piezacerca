@@ -161,6 +161,11 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
 - 2026-09-30: un administrador se nombra solo desde Supabase > SQL Editor
   (`update public.perfiles set es_admin = true where id = (select id from auth.users where email = '...')`).
   Yeison (yeisonmoreno9052@gmail.com) ya es administrador.
+- 2026-09-30: panel de administrador en `/admin` con **pestañas arriba** (Motos / Piezas / Tiendas),
+  motos agrupadas por marca. Editar y borrar solo dentro de la ficha de cada registro, nunca en la lista;
+  borrar pide un segundo toque de confirmación.
+- 2026-09-30: datos de carga inicial en `supabase/datos/` (se pegan en el SQL Editor).
+  Los años de las 20 motos iniciales son aproximados: confirmar con mecánicos.
 
 ## Pendiente por decidir
 
