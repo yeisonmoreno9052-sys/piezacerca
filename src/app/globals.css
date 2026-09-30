@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+/* Colores de PiezaCerca (ver sección "Diseño" en CLAUDE.md) */
+@theme inline {
+  --color-fondo: #f5f3ee;
+  --color-tinta: #1b1f24;
+  --color-naranja: #e0621b;
+  --color-verde: #1f7a4d;
+  --color-verde-suave: #ddf1e5;
+  --color-ambar: #6b4600;
+  --color-ambar-suave: #fbebc8;
+  --color-tienda: #123b2b;
+
+  --font-titulo: var(--font-bricolage);
+  --font-sans: var(--font-figtree);
+}
+
+body {
+  background: var(--color-fondo);
+  color: var(--color-tinta);
+  font-family: var(--font-figtree), system-ui, sans-serif;
+}
