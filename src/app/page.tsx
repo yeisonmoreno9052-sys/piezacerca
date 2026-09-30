@@ -1,10 +1,56 @@
-export default function Inicio() {
+import Link from "next/link";
+import { crearClienteServidor } from "@/lib/supabase/server";
+import { salir } from "./acciones";
+
+export default async function Inicio() {
+  const supabase = await crearClienteServidor();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: perfil } = user
+    ? await supabase.from("perfiles").select("nombre, es_admin").eq("id", user.id).single()
+    : { data: null };
+
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-8">
-      <h1 className="font-titulo text-3xl font-bold tracking-tight">
-        Pieza<span className="text-naranja">Cerca</span>
-      </h1>
-      <p className="mt-1 text-sm opacity-70">Repuestos de moto en Medellín</p>
+      <header className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-titulo text-3xl font-bold tracking-tight">
+            Pieza<span className="text-naranja">Cerca</span>
+          </h1>
+          <p className="mt-1 text-sm opacity-70">Repuestos de moto en Medellín</p>
+        </div>
+
+        {user ? (
+          <form action={salir}>
+            <button
+              type="submit"
+              className="min-h-11 rounded-xl border border-tinta/20 bg-white px-4 text-sm font-medium"
+            >
+              Salir
+            </button>
+          </form>
+        ) : (
+          <Link
+            href="/entrar"
+            className="flex min-h-11 items-center rounded-xl border border-tinta/20 bg-white px-4 text-sm font-medium"
+          >
+            Entrar
+          </Link>
+        )}
+      </header>
+
+      {user && (
+        <p className="mt-6 text-sm">
+          Hola, <strong>{perfil?.nombre ?? user.email}</strong>
+          {perfil?.es_admin && (
+            <span className="ml-2 rounded-full bg-tienda px-3 py-1 text-xs font-medium text-white">
+              Administrador
+            </span>
+          )}
+        </p>
+      )}
 
       <section className="mt-10">
         <h2 className="font-titulo text-2xl font-semibold leading-tight">
