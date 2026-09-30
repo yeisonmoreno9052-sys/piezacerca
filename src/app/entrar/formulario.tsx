@@ -88,8 +88,9 @@ export function FormularioEntrar() {
       ) : (
         <form onSubmit={verificarCodigo}>
           <p className="rounded-xl bg-verde-suave p-3 text-sm text-verde">
-            Te enviamos un correo a <strong>{correo}</strong>. Escribe aquí el código que
-            aparece, o toca el enlace del correo.
+            Te enviamos un correo a <strong>{correo}</strong>. Ábrelo en este mismo
+            navegador y toca el enlace para entrar. Si el correo trae un código, escríbelo
+            aquí.
           </p>
           <label className="mt-4 block text-sm font-medium">
             Código

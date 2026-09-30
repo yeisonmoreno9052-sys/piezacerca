@@ -163,6 +163,9 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
 - Lista final de motos (confirmar con mecánicos).
 - Proveedor de mapas.
 - Nombre definitivo (PiezaCerca es provisional).
+- Correo propio (SMTP, ej. Resend) para Supabase: hace falta antes de las pruebas con tiendas.
+  Sin él, Supabase no deja editar las plantillas (el correo no trae código, solo enlace)
+  y solo envía unos pocos correos por hora.
 
 ## Negocio (referencia, no se construye en la versión 1)
 
