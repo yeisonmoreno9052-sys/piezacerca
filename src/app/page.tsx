@@ -52,6 +52,15 @@ export default async function Inicio() {
         </p>
       )}
 
+      {perfil?.es_admin && (
+        <Link
+          href="/admin"
+          className="mt-4 flex min-h-11 items-center justify-center rounded-xl bg-tienda px-4 font-semibold text-white"
+        >
+          Panel de administrador
+        </Link>
+      )}
+
       <section className="mt-10">
         <h2 className="font-titulo text-2xl font-semibold leading-tight">
           ¿Qué pieza necesitas hoy?
