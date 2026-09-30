@@ -148,6 +148,9 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   `crearClienteNavegador()` (`src/lib/supabase/client.ts`) y `crearClienteServidor()` (`src/lib/supabase/server.ts`).
   La clave secreta de Supabase nunca va en la app ni en el chat.
 - 2026-09-30: diseño de tablas aprobado (ver sección "Datos").
+- 2026-09-30: los cambios a la base de datos van como archivos en `supabase/migrations/` y el dueño los
+  ejecuta en Supabase > SQL Editor (pegar y Run). `20260930000000_tablas_iniciales.sql` ya está aplicado.
+  Nunca editar una migración ya aplicada: los cambios nuevos van en un archivo nuevo.
 - 2026-09-30: "marcas que maneja" una tienda = marcas **de moto** (Honda, AKT, Yamaha…).
 - 2026-09-30: el WhatsApp de una tienda lo ve el cliente **solo si la tienda está activa**.
 - 2026-09-30: una solicitud llega a las tiendas activas a **5 km o menos** que manejen esa línea;
