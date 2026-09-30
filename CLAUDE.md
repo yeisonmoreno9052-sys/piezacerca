@@ -72,16 +72,27 @@ preguntando si tienen una pieza y a cómo. Pierden horas y la moto queda parada.
 - **GitHub** para el código
 - Mapas: Google Maps o una alternativa gratuita (decidir en la semana 2)
 
-## Datos (propuesta inicial, confirmar antes de crear)
+## Datos (aprobado 2026-09-30; el SQL está en `supabase/migrations/`)
 
-- `tiendas`: nombre, dirección, lat/lng, whatsapp, estado (sin_confirmar / activa), líneas y marcas que maneja, tiempo promedio de respuesta
-- `usuarios_tienda`: usuario ↔ tienda (varios por tienda)
-- `motos`: marca, modelo, cilindraje, años
-- `piezas`: nombre, categoría (frenos, luces, arrastre, eléctrico, motor, otros), otros nombres (sinónimos)
+- `perfiles`: una fila por usuario (nombre, es_admin, "mi moto"). Se crea sola al registrarse.
+- `motos`: marca, modelo, cilindraje, año desde / hasta
+- `piezas`: nombre, categoría (frenos, luces, arrastre, eléctrico, motor, otros), sinónimos
 - `compatibilidades`: pieza ↔ moto
-- `solicitudes`: cliente, pieza o lista, moto, ubicación, fecha, vence_en (10 min)
-- `solicitud_items`: para listas de varias piezas, con cantidad
-- `respuestas`: solicitud, tienda, tiene (sí/no) por ítem, precio, fecha de respuesta
+- `tiendas`: nombre, dirección, lat/lng, estado (sin_confirmar / activa), tiempo promedio de respuesta
+- `tienda_contacto`: WhatsApp (aparte, para mostrarlo solo si la tienda está activa)
+- `tienda_categorias` / `tienda_marcas`: líneas de piezas y marcas de moto que atiende
+- `codigos_activacion`: código para activar una tienda (solo administrador)
+- `usuarios_tienda`: usuario ↔ tienda, rol dueño / empleado (varios por tienda)
+- `solicitudes`: cliente, moto, ubicación, creada_en, vence_en (10 min, lo fija la base de datos)
+- `solicitud_items`: piezas pedidas con cantidad. **Una pregunta de una sola pieza es una lista de 1 ítem.**
+- `solicitud_tiendas`: a qué tiendas llegó y cuándo respondió. "No respondió" = sin respuesta y ya venció.
+- `respuestas`: por tienda y por ítem: tiene sí/no, precio (entero en pesos), quién respondió
+- `listas_guardadas` / `lista_items`: listas que el cliente guarda para reutilizar
+- El precio sugerido se calcula de las respuestas anteriores de la misma tienda (sin tabla propia).
+
+Permisos (RLS): catálogo y datos básicos de tiendas son públicos; el precio de una respuesta solo lo ven
+el cliente de esa solicitud y la tienda que respondió; tiendas sin confirmar no reciben solicitudes;
+el administrador ve todo.
 
 ## Alcance de la versión 1 (6 semanas)
 
@@ -136,6 +147,12 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Las conexiones se crean con
   `crearClienteNavegador()` (`src/lib/supabase/client.ts`) y `crearClienteServidor()` (`src/lib/supabase/server.ts`).
   La clave secreta de Supabase nunca va en la app ni en el chat.
+- 2026-09-30: diseño de tablas aprobado (ver sección "Datos").
+- 2026-09-30: "marcas que maneja" una tienda = marcas **de moto** (Honda, AKT, Yamaha…).
+- 2026-09-30: el WhatsApp de una tienda lo ve el cliente **solo si la tienda está activa**.
+- 2026-09-30: una solicitud llega a las tiendas activas a **5 km o menos** que manejen esa línea;
+  si no hay ninguna, se amplía a **10 km**.
+- 2026-09-30: **buscar no requiere cuenta**; **preguntar a las tiendas sí** (correo o Google).
 
 ## Pendiente por decidir
 
