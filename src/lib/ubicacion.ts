@@ -25,7 +25,12 @@ const PATRONES = [
 ];
 
 function buscarCoordenadas(texto: string) {
-  const limpio = decodeURIComponent(texto);
+  let limpio = texto;
+  try {
+    limpio = decodeURIComponent(texto);
+  } catch {
+    // Texto con "%" sueltos: se busca tal cual.
+  }
   for (const patron of PATRONES) {
     const m = limpio.match(patron);
     if (m) return { lat: Number(m[1]), lng: Number(m[2]) };
@@ -55,11 +60,13 @@ export async function leerUbicacion(entrada: string): Promise<Resultado> {
   const texto = entrada.trim();
   if (!texto) return { error: "Pega el enlace de Google Maps o las coordenadas de la tienda." };
 
-  const esEnlace = /^https?:\/\//i.test(texto);
-  if (esEnlace) {
+  // Al "Compartir" desde el celular, a veces se copia el nombre o la dirección junto con el enlace:
+  // se busca el enlace en cualquier parte del texto.
+  const enlace = texto.match(/https?:\/\/\S+/i)?.[0];
+  if (enlace) {
     let host: string;
     try {
-      host = new URL(texto).hostname;
+      host = new URL(enlace).hostname;
     } catch {
       return { error: "Ese enlace no se entiende. Cópialo otra vez desde Google Maps." };
     }
@@ -68,10 +75,10 @@ export async function leerUbicacion(entrada: string): Promise<Resultado> {
     }
   }
 
-  let coordenadas = buscarCoordenadas(texto);
-  if (!coordenadas && esEnlace) {
+  let coordenadas = buscarCoordenadas(enlace ?? texto);
+  if (!coordenadas && enlace) {
     try {
-      coordenadas = buscarCoordenadas(await expandirEnlace(texto));
+      coordenadas = buscarCoordenadas(await expandirEnlace(enlace));
     } catch {
       coordenadas = null;
     }
