@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { exigirAdmin } from "@/lib/admin";
 import { actualizarMoto, borrarMoto } from "../acciones";
 import { FormularioMoto } from "../formulario-moto";
-import { BotonBorrar } from "./boton-borrar";
+import { BotonBorrar } from "../../boton-borrar";
 
 export default async function EditarMoto({ params }: PageProps<"/admin/motos/[id]">) {
   const { id } = await params;
@@ -51,7 +51,7 @@ export default async function EditarMoto({ params }: PageProps<"/admin/motos/[id
             : ""}
           Esto no se puede deshacer.
         </p>
-        <BotonBorrar accion={borrarMoto.bind(null, idMoto)} />
+        <BotonBorrar accion={borrarMoto.bind(null, idMoto)} texto="Borrar moto" />
       </section>
     </>
   );

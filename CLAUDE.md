@@ -169,6 +169,10 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
 - 2026-09-30: publicada en Vercel (plan Hobby): **https://piezacerca.vercel.app**. Código en GitHub
   (privado): `yeisonmoreno9052-sys/piezacerca`. Cada `git push` a `main` publica solo.
   Las dos variables de Supabase están cargadas en Vercel > Settings > Environment Variables.
+- 2026-09-30: las piezas son **genéricas** (tipo de repuesto: "Farola", "Kit de arrastre"), no por referencia
+  exacta de moto. La moto la escoge el cliente al buscar y va en la solicitud. La tabla `compatibilidades`
+  no se usa en la versión 1. No puede haber dos piezas con el mismo nombre. Lista inicial de 76 piezas en
+  `supabase/datos/20260930_piezas_iniciales.sql` (revisar con mecánicos).
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión

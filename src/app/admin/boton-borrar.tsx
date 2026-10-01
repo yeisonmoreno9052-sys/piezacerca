@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 // Pide confirmación con un segundo toque antes de borrar.
-export function BotonBorrar({ accion }: { accion: () => Promise<void> }) {
+export function BotonBorrar({ accion, texto }: { accion: () => Promise<void>; texto: string }) {
   const [confirmando, setConfirmando] = useState(false);
 
   if (!confirmando) {
@@ -13,7 +13,7 @@ export function BotonBorrar({ accion }: { accion: () => Promise<void> }) {
         onClick={() => setConfirmando(true)}
         className="mt-3 min-h-11 w-full rounded-xl border border-red-700/40 bg-white px-4 font-medium text-red-700"
       >
-        Borrar moto
+        {texto}
       </button>
     );
   }
