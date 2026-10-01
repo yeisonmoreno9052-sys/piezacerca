@@ -166,6 +166,9 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   borrar pide un segundo toque de confirmación.
 - 2026-09-30: datos de carga inicial en `supabase/datos/` (se pegan en el SQL Editor).
   Los años de las 20 motos iniciales son aproximados: confirmar con mecánicos.
+- 2026-09-30: publicada en Vercel (plan Hobby): **https://piezacerca.vercel.app**. Código en GitHub
+  (privado): `yeisonmoreno9052-sys/piezacerca`. Cada `git push` a `main` publica solo.
+  Las dos variables de Supabase están cargadas en Vercel > Settings > Environment Variables.
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
