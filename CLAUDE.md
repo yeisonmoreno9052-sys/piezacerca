@@ -177,6 +177,8 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
 - Lista final de motos (confirmar con mecánicos).
 - Proveedor de mapas.
 - Nombre definitivo (PiezaCerca es provisional).
+- Plan de Vercel: hoy es **Hobby (gratis)**, que según Vercel es para uso no comercial. Antes de empezar
+  a cobrarle a las tiendas hay que pasar a Pro (~20 dólares al mes) u otro proveedor.
 - Correo propio (SMTP, ej. Resend) para Supabase: hace falta antes de las pruebas con tiendas.
   Sin él, Supabase no deja editar las plantillas (el correo no trae código, solo enlace)
   y solo envía unos pocos correos por hora.
