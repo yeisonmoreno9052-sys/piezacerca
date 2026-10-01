@@ -166,6 +166,10 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   borrar pide un segundo toque de confirmación.
 - 2026-09-30: datos de carga inicial en `supabase/datos/` (se pegan en el SQL Editor).
   Los años de las 20 motos iniciales son aproximados: confirmar con mecánicos.
+- 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
+- 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
+  o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
+  localmente con `getClaims()` (el proyecto usa llaves ES256). No usar `getUser()` en páginas.
 
 ## Pendiente por decidir
 
