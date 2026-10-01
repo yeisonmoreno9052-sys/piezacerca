@@ -1,16 +1,9 @@
 import Link from "next/link";
-import { crearClienteServidor } from "@/lib/supabase/server";
+import { obtenerSesion } from "@/lib/sesion";
 import { salir } from "./acciones";
 
 export default async function Inicio() {
-  const supabase = await crearClienteServidor();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const { data: perfil } = user
-    ? await supabase.from("perfiles").select("nombre, es_admin").eq("id", user.id).single()
-    : { data: null };
+  const { usuarioId, correo, perfil } = await obtenerSesion();
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-8">
@@ -22,7 +15,7 @@ export default async function Inicio() {
           <p className="mt-1 text-sm opacity-70">Repuestos de moto en Medellín</p>
         </div>
 
-        {user ? (
+        {usuarioId ? (
           <form action={salir}>
             <button
               type="submit"
@@ -41,9 +34,9 @@ export default async function Inicio() {
         )}
       </header>
 
-      {user && (
+      {usuarioId && (
         <p className="mt-6 text-sm">
-          Hola, <strong>{perfil?.nombre ?? user.email}</strong>
+          Hola, <strong>{perfil?.nombre ?? correo}</strong>
           {perfil?.es_admin && (
             <span className="ml-2 rounded-full bg-tienda px-3 py-1 text-xs font-medium text-white">
               Administrador
