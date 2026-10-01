@@ -158,6 +158,9 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
 - 2026-09-30: **buscar no requiere cuenta**; **preguntar a las tiendas sí** (correo o Google).
 - 2026-09-30: inicio de sesión sin contraseña: se pide el correo en `/entrar` y llega un enlace
   (y un código cuando haya correo propio). Google queda para cuando se publique en Vercel.
+- 2026-09-30 (cambio aprobado): además existe **"Entrar con contraseña"** (correo + contraseña, no envía
+  correo). La usa el administrador y, más adelante, las tiendas. Los clientes siguen con el enlace al correo.
+  La contraseña del administrador la pone el dueño en el SQL Editor (nunca pasa por el chat ni por el código).
 - 2026-09-30: un administrador se nombra solo desde Supabase > SQL Editor
   (`update public.perfiles set es_admin = true where id = (select id from auth.users where email = '...')`).
   Yeison (yeisonmoreno9052@gmail.com) ya es administrador.

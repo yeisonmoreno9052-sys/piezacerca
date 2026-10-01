@@ -6,6 +6,9 @@ import { crearClienteNavegador } from "@/lib/supabase/client";
 
 function mensajeDeError(mensaje: string) {
   const m = mensaje.toLowerCase();
+  if (m.includes("invalid login credentials")) {
+    return "El correo o la contraseña no son correctos.";
+  }
   if (m.includes("rate limit") || m.includes("security purposes")) {
     return "Pediste varios códigos seguidos. Espera unos minutos e inténtalo de nuevo.";
   }
@@ -20,9 +23,10 @@ function mensajeDeError(mensaje: string) {
 
 export function FormularioEntrar() {
   const router = useRouter();
-  const [paso, setPaso] = useState<"correo" | "codigo">("correo");
+  const [paso, setPaso] = useState<"correo" | "codigo" | "contrasena">("correo");
   const [correo, setCorreo] = useState("");
   const [codigo, setCodigo] = useState("");
+  const [contrasena, setContrasena] = useState("");
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,6 +63,32 @@ export function FormularioEntrar() {
     router.refresh();
   }
 
+  // Entrar con contraseña: no envía correo (para el administrador y, más adelante, las tiendas).
+  async function entrarConContrasena(e: React.FormEvent) {
+    e.preventDefault();
+    setCargando(true);
+    setError(null);
+    const supabase = crearClienteNavegador();
+    const { error } = await supabase.auth.signInWithPassword({
+      email: correo.trim(),
+      password: contrasena,
+    });
+    if (error) {
+      setCargando(false);
+      setError(mensajeDeError(error.message));
+      return;
+    }
+    router.replace("/");
+    router.refresh();
+  }
+
+  function cambiarA(nuevo: "correo" | "contrasena") {
+    setPaso(nuevo);
+    setCodigo("");
+    setContrasena("");
+    setError(null);
+  }
+
   const campo =
     "mt-1 min-h-11 w-full rounded-xl border border-tinta/20 bg-white px-4 text-base outline-none focus:border-naranja";
   const botonPrincipal =
@@ -83,6 +113,36 @@ export function FormularioEntrar() {
           </label>
           <button type="submit" disabled={cargando} className={botonPrincipal}>
             {cargando ? "Enviando…" : "Enviarme el código"}
+          </button>
+        </form>
+      ) : paso === "contrasena" ? (
+        <form onSubmit={entrarConContrasena}>
+          <label className="block text-sm font-medium">
+            Tu correo
+            <input
+              type="email"
+              required
+              autoComplete="email"
+              inputMode="email"
+              placeholder="nombre@correo.com"
+              value={correo}
+              onChange={(e) => setCorreo(e.target.value)}
+              className={campo}
+            />
+          </label>
+          <label className="mt-4 block text-sm font-medium">
+            Contraseña
+            <input
+              type="password"
+              required
+              autoComplete="current-password"
+              value={contrasena}
+              onChange={(e) => setContrasena(e.target.value)}
+              className={campo}
+            />
+          </label>
+          <button type="submit" disabled={cargando} className={botonPrincipal}>
+            {cargando ? "Entrando…" : "Entrar"}
           </button>
         </form>
       ) : (
@@ -112,11 +172,7 @@ export function FormularioEntrar() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setPaso("correo");
-              setCodigo("");
-              setError(null);
-            }}
+            onClick={() => cambiarA("correo")}
             className="mt-2 min-h-11 w-full rounded-xl px-4 text-sm font-medium underline"
           >
             Cambiar correo o pedir otro código
@@ -130,7 +186,14 @@ export function FormularioEntrar() {
         </p>
       )}
 
-      <div className="mt-8 border-t border-tinta/10 pt-6">
+      <div className="mt-8 space-y-3 border-t border-tinta/10 pt-6">
+        <button
+          type="button"
+          onClick={() => cambiarA(paso === "contrasena" ? "correo" : "contrasena")}
+          className="min-h-11 w-full rounded-xl border border-tinta/20 bg-white px-4 font-medium"
+        >
+          {paso === "contrasena" ? "Entrar con enlace al correo" : "Entrar con contraseña"}
+        </button>
         <button
           type="button"
           disabled
