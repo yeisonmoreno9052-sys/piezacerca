@@ -1,7 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
 import { CATEGORIAS } from "@/lib/catalogo";
+import { useFormularioAdmin } from "../usar-formulario";
 import type { EstadoFormulario } from "./acciones";
 
 type Pieza = {
@@ -22,10 +22,10 @@ export function FormularioPieza({
   pieza?: Pieza;
   textoBoton: string;
 }) {
-  const [estado, enviar, guardando] = useActionState(accion, { error: null });
+  const { estado, alEnviar, guardando } = useFormularioAdmin(accion);
 
   return (
-    <form action={enviar} className="space-y-4">
+    <form onSubmit={alEnviar} className="space-y-4">
       <label className="block text-sm font-medium">
         Nombre de la pieza
         <input

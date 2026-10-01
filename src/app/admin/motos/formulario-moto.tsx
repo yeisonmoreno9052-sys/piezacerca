@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useFormularioAdmin } from "../usar-formulario";
 import type { EstadoFormulario } from "./acciones";
 
 type Moto = {
@@ -25,10 +25,10 @@ export function FormularioMoto({
   moto?: Moto;
   textoBoton: string;
 }) {
-  const [estado, enviar, guardando] = useActionState(accion, { error: null });
+  const { estado, alEnviar, guardando } = useFormularioAdmin(accion);
 
   return (
-    <form action={enviar} className="space-y-4">
+    <form onSubmit={alEnviar} className="space-y-4">
       <label className="block text-sm font-medium">
         Marca
         <input

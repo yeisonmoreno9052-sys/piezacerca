@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useState } from "react";
 import { CATEGORIAS, MARCA_TODAS } from "@/lib/catalogo";
+import { useFormularioAdmin } from "../usar-formulario";
 import type { EstadoFormulario } from "./acciones";
 
 type Tienda = {
@@ -29,13 +30,13 @@ export function FormularioTienda({
   tienda?: Tienda;
   textoBoton: string;
 }) {
-  const [estado, enviar, guardando] = useActionState(accion, { error: null });
+  const { estado, alEnviar, guardando } = useFormularioAdmin(accion);
   const [todasLasMarcas, setTodasLasMarcas] = useState(
     tienda?.marcas.includes(MARCA_TODAS) ?? false,
   );
 
   return (
-    <form action={enviar} className="space-y-4">
+    <form onSubmit={alEnviar} className="space-y-4">
       <label className="block text-sm font-medium">
         Nombre de la tienda
         <input
