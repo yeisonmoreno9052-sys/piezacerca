@@ -182,6 +182,8 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   "Compartir") o coordenadas; `src/lib/ubicacion.ts` la extrae y rechaza puntos fuera del Valle de Aburrá.
   WhatsApp se guarda como `+57` + 10 dígitos. En `tienda_marcas`, la marca `"Todas"` (`MARCA_TODAS`) significa
   que atiende cualquier marca. Toda tienda nueva queda "sin confirmar"; se activa con código (semana 5).
+  El campo de ubicación (`campo-ubicacion.tsx`) acepta el texto completo de "Compartir" (dirección + enlace),
+  tiene botón "Usar mi ubicación actual" (GPS del celular) y muestra el punto encontrado antes de guardar.
 - 2026-09-30: **un formulario nunca debe borrar lo escrito cuando hay un error.** En el panel se usa
   `useFormularioAdmin()` (`src/app/admin/usar-formulario.ts`) con `<form onSubmit={alEnviar}>`, no `<form action>`
   (que vacía el formulario al terminar). Usar el mismo patrón en formularios nuevos.

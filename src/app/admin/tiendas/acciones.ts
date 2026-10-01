@@ -4,9 +4,15 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { exigirAdmin } from "@/lib/admin";
 import { esCategoria, MARCA_TODAS } from "@/lib/catalogo";
-import { leerUbicacion, leerWhatsapp } from "@/lib/ubicacion";
+import { leerUbicacion, leerWhatsapp, type ResultadoUbicacion } from "@/lib/ubicacion";
 
 export type EstadoFormulario = { error: string | null };
+
+// Vista previa: revisa la ubicación pegada antes de guardar la tienda.
+export async function revisarUbicacion(texto: string): Promise<ResultadoUbicacion> {
+  await exigirAdmin();
+  return leerUbicacion(texto);
+}
 
 function limpiar(texto: string) {
   return texto.trim().replace(/\s+/g, " ");

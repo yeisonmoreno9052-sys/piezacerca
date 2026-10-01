@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CATEGORIAS, MARCA_TODAS } from "@/lib/catalogo";
 import { useFormularioAdmin } from "../usar-formulario";
 import type { EstadoFormulario } from "./acciones";
+import { CampoUbicacion } from "./campo-ubicacion";
 
 type Tienda = {
   nombre: string;
@@ -59,21 +60,7 @@ export function FormularioTienda({
         />
       </label>
 
-      <label className="block text-sm font-medium">
-        Ubicación en el mapa
-        <textarea
-          name="ubicacion"
-          required
-          rows={2}
-          placeholder="Pega el enlace de Google Maps o las coordenadas"
-          defaultValue={tienda?.ubicacion}
-          className={`${campo} py-3`}
-        />
-      </label>
-      <p className="-mt-2 text-xs opacity-70">
-        En Google Maps busca la tienda, toca &quot;Compartir&quot; y copia el enlace. También
-        sirven las coordenadas, por ejemplo 6.2775, -75.5964.
-      </p>
+      <CampoUbicacion valorInicial={tienda?.ubicacion} />
 
       <label className="block text-sm font-medium">
         WhatsApp

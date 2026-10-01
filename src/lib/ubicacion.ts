@@ -1,7 +1,20 @@
 // Saca la ubicación (lat, lng) de lo que pegue el administrador:
 // un enlace de Google Maps (largo o corto, de "Compartir") o unas coordenadas "6.2442, -75.5812".
 
-type Resultado = { lat: number; lng: number } | { error: string };
+export type ResultadoUbicacion =
+  | { lat: number; lng: number; lugar: string | null }
+  | { error: string };
+
+// "…/maps/place/Cl.+64f+%23+97A-28,+Pajarito,+Medell%C3%ADn/@6.28…" -> "Cl. 64f # 97A-28, Pajarito, Medellín"
+function nombreDelLugar(enlace: string) {
+  const m = enlace.match(/\/maps\/place\/([^/@?]+)/);
+  if (!m) return null;
+  try {
+    return decodeURIComponent(m[1].replace(/\+/g, " ")).trim() || null;
+  } catch {
+    return null;
+  }
+}
 
 // Valle de Aburrá con margen (incluye Robledo y San Cristóbal).
 const ZONA = { latMin: 5.95, latMax: 6.55, lngMin: -75.8, lngMax: -75.25 };
@@ -56,7 +69,7 @@ async function expandirEnlace(enlace: string) {
   return actual;
 }
 
-export async function leerUbicacion(entrada: string): Promise<Resultado> {
+export async function leerUbicacion(entrada: string): Promise<ResultadoUbicacion> {
   const texto = entrada.trim();
   if (!texto) return { error: "Pega el enlace de Google Maps o las coordenadas de la tienda." };
 
@@ -76,9 +89,12 @@ export async function leerUbicacion(entrada: string): Promise<Resultado> {
   }
 
   let coordenadas = buscarCoordenadas(enlace ?? texto);
+  let lugar = enlace ? nombreDelLugar(enlace) : null;
   if (!coordenadas && enlace) {
     try {
-      coordenadas = buscarCoordenadas(await expandirEnlace(enlace));
+      const completo = await expandirEnlace(enlace);
+      coordenadas = buscarCoordenadas(completo);
+      lugar = nombreDelLugar(completo);
     } catch {
       coordenadas = null;
     }
@@ -98,7 +114,7 @@ export async function leerUbicacion(entrada: string): Promise<Resultado> {
     };
   }
 
-  return { lat: Number(lat.toFixed(6)), lng: Number(lng.toFixed(6)) };
+  return { lat: Number(lat.toFixed(6)), lng: Number(lng.toFixed(6)), lugar };
 }
 
 // WhatsApp colombiano: 10 dígitos (celular 3xx o fijo 60x). Se guarda como +57XXXXXXXXXX.
