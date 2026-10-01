@@ -4,6 +4,14 @@ import { NextResponse, type NextRequest } from "next/server";
 // Antes de cada página, renueva la sesión de Supabase si está por vencer,
 // para que el usuario no tenga que volver a entrar a cada rato.
 export async function proxy(request: NextRequest) {
+  // Si el enlace del correo cae en otra página (p. ej. el inicio), se termina de entrar en /auth/confirmar.
+  const { pathname, searchParams } = request.nextUrl;
+  if (searchParams.has("code") && pathname !== "/auth/confirmar") {
+    const destino = request.nextUrl.clone();
+    destino.pathname = "/auth/confirmar";
+    return NextResponse.redirect(destino);
+  }
+
   let respuesta = NextResponse.next({ request });
 
   const supabase = createServerClient(
