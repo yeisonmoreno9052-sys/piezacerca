@@ -14,6 +14,9 @@ export function esCategoria(valor: string): valor is Categoria {
   return CATEGORIAS.some((c) => c.valor === valor);
 }
 
+// En `tienda_marcas`, esta marca significa que la tienda atiende cualquier marca de moto.
+export const MARCA_TODAS = "Todas";
+
 export function textoCategoria(valor: string) {
   return CATEGORIAS.find((c) => c.valor === valor)?.texto ?? valor;
 }

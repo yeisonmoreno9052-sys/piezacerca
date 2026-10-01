@@ -176,6 +176,12 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   exacta de moto. La moto la escoge el cliente al buscar y va en la solicitud. La tabla `compatibilidades`
   no se usa en la versión 1. No puede haber dos piezas con el mismo nombre. Lista inicial de 76 piezas en
   `supabase/datos/20260930_piezas_iniciales.sql` (revisar con mecánicos).
+- 2026-09-30: **zona del piloto: barrio Robledo (Medellín) y el corregimiento de San Cristóbal**, cerca de
+  donde vive el dueño.
+- 2026-09-30: panel de Tiendas. La ubicación se carga pegando el enlace de Google Maps (largo o corto de
+  "Compartir") o coordenadas; `src/lib/ubicacion.ts` la extrae y rechaza puntos fuera del Valle de Aburrá.
+  WhatsApp se guarda como `+57` + 10 dígitos. En `tienda_marcas`, la marca `"Todas"` (`MARCA_TODAS`) significa
+  que atiende cualquier marca. Toda tienda nueva queda "sin confirmar"; se activa con código (semana 5).
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
@@ -183,7 +189,6 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
 
 ## Pendiente por decidir
 
-- Zona de Medellín para el piloto.
 - Lista final de motos (confirmar con mecánicos).
 - Proveedor de mapas.
 - Nombre definitivo (PiezaCerca es provisional).
