@@ -1,95 +1,58 @@
 import Link from "next/link";
 import { obtenerSesion } from "@/lib/sesion";
 import { salir } from "./acciones";
+import { Buscador, type Moto, type Pieza } from "./buscador";
 
 export default async function Inicio() {
-  const { usuarioId, correo, perfil } = await obtenerSesion();
+  const { supabase, usuarioId, perfil } = await obtenerSesion();
+  const [{ data: motos }, { data: piezas }] = await Promise.all([
+    supabase
+      .from("motos")
+      .select("id, marca, modelo, cilindraje")
+      .order("marca")
+      .order("modelo")
+      .order("cilindraje"),
+    supabase.from("piezas").select("id, nombre, categoria").order("nombre"),
+  ]);
 
-  return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-8">
-      <header className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="font-titulo text-3xl font-bold tracking-tight">
-            Pieza<span className="text-naranja">Cerca</span>
-          </h1>
-          <p className="mt-1 text-sm opacity-70">Repuestos de moto en Medellín</p>
-        </div>
+  const enlaceCuenta =
+    "flex min-h-11 items-center rounded-full bg-white/10 px-4 text-sm font-semibold text-fondo";
 
+  const cabecera = (
+    <div className="flex items-center justify-between gap-3">
+      <Link href="/" className="font-titulo text-2xl font-extrabold tracking-tight">
+        Pieza<span className="text-[#F07A3A]">Cerca</span>
+      </Link>
+      <div className="flex items-center gap-2">
+        {perfil?.es_admin && (
+          <Link href="/admin" className={enlaceCuenta}>
+            Panel
+          </Link>
+        )}
         {usuarioId ? (
           <form action={salir}>
-            <button
-              type="submit"
-              className="min-h-11 rounded-xl border border-tinta/20 bg-white px-4 text-sm font-medium"
-            >
+            <button type="submit" className={enlaceCuenta}>
               Salir
             </button>
           </form>
         ) : (
-          <Link
-            href="/entrar"
-            className="flex min-h-11 items-center rounded-xl border border-tinta/20 bg-white px-4 text-sm font-medium"
-          >
+          <Link href="/entrar" className={enlaceCuenta}>
             Entrar
           </Link>
         )}
-      </header>
+      </div>
+    </div>
+  );
 
-      {usuarioId && (
-        <p className="mt-6 text-sm">
-          Hola, <strong>{perfil?.nombre ?? correo}</strong>
-          {perfil?.es_admin && (
-            <span className="ml-2 rounded-full bg-tienda px-3 py-1 text-xs font-medium text-white">
-              Administrador
-            </span>
-          )}
-        </p>
-      )}
-
-      {perfil?.es_admin && (
-        <Link
-          href="/admin"
-          className="mt-4 flex min-h-11 items-center justify-center rounded-xl bg-tienda px-4 font-semibold text-white"
-        >
-          Panel de administrador
-        </Link>
-      )}
-
-      <section className="mt-10">
-        <h2 className="font-titulo text-2xl font-semibold leading-tight">
-          ¿Qué pieza necesitas hoy?
-        </h2>
-        <p className="mt-2 opacity-80">
-          Te mostramos qué tiendas cercanas la manejan, sin llamar a cada una.
-        </p>
-
-        <button
-          type="button"
-          disabled
-          className="mt-6 min-h-11 w-full rounded-xl bg-naranja px-4 font-semibold text-white opacity-60"
-        >
-          Buscar una pieza (próximamente)
-        </button>
-      </section>
-
-      <section className="mt-10 space-y-3 text-sm">
-        <p className="font-semibold">Así se verán las tiendas:</p>
-        <div className="flex items-center justify-between rounded-xl bg-white p-4">
-          <span>Motopartes La 80</span>
-          <span className="rounded-full bg-ambar-suave px-3 py-1 font-medium text-ambar">
-            Maneja la pieza
-          </span>
-        </div>
-        <div className="flex items-center justify-between rounded-xl bg-white p-4">
-          <span>Repuestos El Taller</span>
-          <span className="rounded-full bg-verde-suave px-3 py-1 font-medium text-verde">
-            La tengo · $ 45.000
-          </span>
-        </div>
-      </section>
-
-      <p className="mt-auto pt-10 text-center text-xs opacity-50">
-        Versión en construcción
-      </p>
+  return (
+    <main className="mx-auto w-full max-w-md flex-1">
+      <Buscador
+        cabecera={cabecera}
+        motos={(motos ?? []) as Moto[]}
+        piezas={(piezas ?? []) as Pieza[]}
+        conSesion={Boolean(usuarioId)}
+        motoDelPerfil={(perfil?.moto_id as number | null | undefined) ?? null}
+      />
     </main>
   );
 }

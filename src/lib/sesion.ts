@@ -15,7 +15,7 @@ export const obtenerSesion = cache(async () => {
 
   const { data: perfil } = await supabase
     .from("perfiles")
-    .select("nombre, es_admin")
+    .select("nombre, es_admin, moto_id")
     .eq("id", claims.sub)
     .single();
 
