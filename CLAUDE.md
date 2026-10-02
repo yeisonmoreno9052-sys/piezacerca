@@ -197,6 +197,10 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   `sugerir_piezas(consulta)`, `sugerir_motos(consulta)` y `tiendas_cercanas(lat, lng, linea, marca_moto)`.
   Usa nombre + otros nombres, sin tildes, tolera errores de escritura. `tiendas_cercanas` aplica la regla de
   5 km / 10 km; `puede_preguntar` solo es verdadero en tiendas activas que manejan la línea y la marca.
+- 2026-10-01: pantalla de inicio (`src/app/page.tsx` + `buscador.tsx`) como el prototipo: buscador con
+  sugerencias (`sugerir_piezas`), "Mi moto", categorías y búsquedas recientes. "Mi moto" se guarda en
+  `perfiles.moto_id` si hay sesión y en el celular (localStorage) siempre; las búsquedas recientes solo en el
+  celular (`src/lib/guardado-local.ts`). Al escoger una pieza se va a `/buscar?pieza=ID&moto=ID`.
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
