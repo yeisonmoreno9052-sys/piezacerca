@@ -8,9 +8,11 @@ import {
   guardarMiMotoLocal,
   useMiMotoLocal,
   useRecientes,
+  useUbicacion,
 } from "@/lib/guardado-local";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { guardarMiMoto } from "./acciones";
+import { SelectorUbicacion } from "./selector-ubicacion";
 
 export type Moto = { id: number; marca: string; modelo: string; cilindraje: number };
 export type Pieza = { id: number; nombre: string; categoria: string };
@@ -38,6 +40,10 @@ export function Buscador({
   const router = useRouter();
   const motoLocal = useMiMotoLocal();
   const recientes = useRecientes();
+  const ubicacion = useUbicacion();
+  const [eligiendoUbicacion, setEligiendoUbicacion] = useState(false);
+  // Pieza escogida antes de decir dónde está: se busca apenas escoja ubicación.
+  const [piezaPendiente, setPiezaPendiente] = useState<{ id: number; nombre: string } | null>(null);
 
   // "Mi moto": la del perfil si entró con su cuenta; si no, la guardada en el celular.
   const [motoElegida, setMotoElegida] = useState<number | null | undefined>(undefined);
@@ -81,11 +87,21 @@ export function Buscador({
     temporizador.current = setTimeout(() => pedirSugerencias(texto), 250);
   }
 
-  function elegirPieza(pieza: { id: number; nombre: string }) {
+  function irAResultados(pieza: { id: number; nombre: string }) {
     agregarReciente({ id: pieza.id, nombre: pieza.nombre });
     const parametros = new URLSearchParams({ pieza: String(pieza.id) });
     if (miMoto) parametros.set("moto", String(miMoto.id));
     router.push(`/buscar?${parametros}`);
+  }
+
+  function elegirPieza(pieza: { id: number; nombre: string }) {
+    if (!ubicacion) {
+      setPiezaPendiente(pieza);
+      setEligiendoUbicacion(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    irAResultados(pieza);
   }
 
   async function alBuscar(evento: React.FormEvent) {
@@ -116,6 +132,44 @@ export function Buscador({
     <>
       <div className="rounded-b-[28px] bg-tinta px-4 pb-7 pt-6 text-fondo">
         {cabecera}
+
+        <button
+          type="button"
+          onClick={() => {
+            setPiezaPendiente(null);
+            setEligiendoUbicacion(!eligiendoUbicacion);
+          }}
+          aria-expanded={eligiendoUbicacion}
+          className="mt-4 flex min-h-11 items-center gap-2 rounded-full bg-white/10 px-4 text-sm font-semibold"
+        >
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z" />
+            <circle cx="12" cy="9" r="2.5" />
+          </svg>
+          {ubicacion ? ubicacion.nombre : "¿Dónde estás?"}
+          <span className="font-normal opacity-70">· {ubicacion ? "Cambiar" : "Escoger"}</span>
+        </button>
+
+        {eligiendoUbicacion && (
+          <SelectorUbicacion
+            mensaje={
+              piezaPendiente
+                ? `Para buscar "${piezaPendiente.nombre}" necesitamos saber dónde estás.`
+                : undefined
+            }
+            alElegir={() => {
+              setEligiendoUbicacion(false);
+              if (piezaPendiente) {
+                irAResultados(piezaPendiente);
+                setPiezaPendiente(null);
+              }
+            }}
+            alCancelar={() => {
+              setEligiendoUbicacion(false);
+              setPiezaPendiente(null);
+            }}
+          />
+        )}
 
         <h1 className="mt-5 font-titulo text-3xl font-bold leading-tight tracking-tight">
           ¿Qué pieza necesitas hoy?

@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import type { Ubicacion } from "./zonas";
 
 // Lo que se guarda en el celular de cada persona (sin cuenta): "mi moto" y las búsquedas recientes.
 // localStorage puede fallar (modo incógnito, almacenamiento bloqueado): en ese caso no se guarda y ya.
@@ -9,6 +10,8 @@ export type PiezaReciente = { id: number; nombre: string };
 
 export const CLAVE_MOTO = "piezacerca:mi-moto";
 export const CLAVE_RECIENTES = "piezacerca:recientes";
+// La ubicación del cliente se guarda solo en su celular; no va en la dirección de la página.
+export const CLAVE_UBICACION = "piezacerca:ubicacion";
 const EVENTO = "piezacerca:guardado";
 
 function leerTexto(clave: string) {
@@ -59,6 +62,14 @@ export function useMiMotoLocal() {
 
 export function useRecientes() {
   return useGuardado<PiezaReciente[]>(CLAVE_RECIENTES) ?? [];
+}
+
+export function useUbicacion() {
+  return useGuardado<Ubicacion>(CLAVE_UBICACION);
+}
+
+export function guardarUbicacion(ubicacion: Ubicacion) {
+  escribir(CLAVE_UBICACION, ubicacion);
 }
 
 export function guardarMiMotoLocal(motoId: number | null) {

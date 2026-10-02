@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { obtenerSesion } from "@/lib/sesion";
 import { textoCategoria } from "@/lib/catalogo";
+import { ZonaActual } from "./zona-actual";
 
 export const metadata: Metadata = {
   title: "Tiendas cercanas · PiezaCerca",
@@ -38,6 +39,7 @@ export default async function Buscar({ searchParams }: PageProps<"/buscar">) {
               ? ` · ${datosMoto.marca} ${datosMoto.modelo} ${datosMoto.cilindraje}`
               : " · sin moto escogida"}
           </p>
+          <ZonaActual />
           <p className="mt-6 rounded-2xl bg-white p-4 text-sm">
             Muy pronto aquí verás las tiendas cercanas que manejan esta pieza, en lista y en mapa.
           </p>
