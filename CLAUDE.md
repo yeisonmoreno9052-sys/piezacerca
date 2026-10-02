@@ -201,6 +201,9 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   sugerencias (`sugerir_piezas`), "Mi moto", categorías y búsquedas recientes. "Mi moto" se guarda en
   `perfiles.moto_id` si hay sesión y en el celular (localStorage) siempre; las búsquedas recientes solo en el
   celular (`src/lib/guardado-local.ts`). Al escoger una pieza se va a `/buscar?pieza=ID&moto=ID`.
+- 2026-10-01: ubicación del cliente: GPS o zona del piloto (Robledo / San Cristóbal, `src/lib/zonas.ts`, centros
+  aproximados por confirmar). Se guarda **solo en el celular** (localStorage), nunca en la URL ni en la base de
+  datos. Si escoge una pieza sin ubicación, la app la pide en ese momento y sigue con la búsqueda.
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
