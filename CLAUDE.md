@@ -187,6 +187,16 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
 - 2026-09-30: **un formulario nunca debe borrar lo escrito cuando hay un error.** En el panel se usa
   `useFormularioAdmin()` (`src/app/admin/usar-formulario.ts`) con `<form onSubmit={alEnviar}>`, no `<form action>`
   (que vacía el formulario al terminar). Usar el mismo patrón en formularios nuevos.
+- 2026-10-01: **mapas con MapTiler** (gratis hasta 100.000 cargas al mes, sin tarjeta, se detiene en vez de
+  cobrar). Proveedor de mapas decidido.
+- 2026-10-01: pantalla de resultados = **opción B**: pestañas **Lista** y **Mapa** al mismo nivel (la app recuerda la
+  que prefiere cada persona), tarjeta de tienda al tocar un punto, botón "Cómo llegar" (abre Google Maps/Waze
+  del celular). **Un solo botón "Preguntar a las N tiendas"** (la solicitud va a todas las cercanas a la vez).
+  Del prototipo se quitan para la v1: "Disponible" en verde, "Con domicilio", horarios y buscar con foto.
+- 2026-10-01: buscador en la base de datos (`supabase/migrations/20261001000000_buscador.sql`):
+  `sugerir_piezas(consulta)`, `sugerir_motos(consulta)` y `tiendas_cercanas(lat, lng, linea, marca_moto)`.
+  Usa nombre + otros nombres, sin tildes, tolera errores de escritura. `tiendas_cercanas` aplica la regla de
+  5 km / 10 km; `puede_preguntar` solo es verdadero en tiendas activas que manejan la línea y la marca.
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
@@ -194,8 +204,10 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
 
 ## Pendiente por decidir
 
-- Lista final de motos (confirmar con mecánicos).
-- Proveedor de mapas.
+- Lista final de motos (confirmar con mecánicos). La Yamaha Libero 125 del prototipo no está cargada.
+- Foto de la pieza (idea, fuera de la v1 hasta que el dueño decida): 1) foto adjunta a la solicitud (lo más
+  simple, candidata a la semana 3 si los mecánicos la piden en el trabajo de campo); 2) foto que reconoce la
+  pieza con inteligencia artificial (después); 3) búsqueda de piezas parecidas por foto (no por ahora).
 - Nombre definitivo (PiezaCerca es provisional).
 - Plan de Vercel: hoy es **Hobby (gratis)**, que según Vercel es para uso no comercial. Antes de empezar
   a cobrarle a las tiendas hay que pasar a Pro (~20 dólares al mes) u otro proveedor.
