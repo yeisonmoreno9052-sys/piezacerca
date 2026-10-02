@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import type { TiendaCercana } from "./resultados";
 
 const CLAVE = process.env.NEXT_PUBLIC_MAPTILER_KEY;
+export const MAPA_DISPONIBLE = Boolean(CLAVE);
 
 // Mapa (MapTiler + MapLibre) con el cliente en azul y las tiendas numeradas:
 // ámbar = maneja la pieza (activa), gris = sin confirmar.

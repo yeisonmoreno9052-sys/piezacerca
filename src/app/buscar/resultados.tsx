@@ -5,7 +5,7 @@ import { enlaceComoLlegar, formatoDistancia, formatoTiempoRespuesta } from "@/li
 import { useUbicacion } from "@/lib/guardado-local";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { SelectorUbicacion } from "../selector-ubicacion";
-import { MapaTiendas } from "./mapa-tiendas";
+import { MAPA_DISPONIBLE, MapaTiendas } from "./mapa-tiendas";
 
 export type TiendaCercana = {
   id: string;
@@ -160,9 +160,10 @@ export function Resultados({
         </p>
       )}
 
-      {tiendas && tiendas.length > 0 && radio > 5 && (
+      {tiendas && radio > 5 && tiendas.some((t) => t.distancia_m > 5000) && (
         <p className="mt-3 text-xs opacity-70">
-          No había tiendas a menos de 5 km; te mostramos las que están hasta a {radio} km.
+          Cerca no había tiendas confirmadas con esta pieza; te mostramos también las que están hasta
+          a {radio} km.
         </p>
       )}
 
@@ -179,7 +180,9 @@ export function Resultados({
               <TarjetaTienda tienda={tiendaSeleccionada} numero={ordenadas.indexOf(tiendaSeleccionada) + 1} />
             </div>
           ) : (
-            <p className="mt-2 text-center text-xs opacity-70">Toca un número para ver la tienda.</p>
+            MAPA_DISPONIBLE && (
+              <p className="mt-2 text-center text-xs opacity-70">Toca un número para ver la tienda.</p>
+            )
           )}
         </div>
       )}
