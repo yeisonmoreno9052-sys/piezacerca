@@ -31,8 +31,10 @@ export function MapaTiendas({
     let cancelado = false;
     let quitarMapa: (() => void) | undefined;
 
-    import("maplibre-gl").then(({ Map, Marker, LngLatBounds }) => {
+    import("maplibre-gl").then(({ Map, Marker, LngLatBounds, setWorkerUrl }) => {
       if (cancelado || !contenedor.current) return;
+      // El "worker" que dibuja las calles se sirve desde public/maplibre/ (scripts/copiar-maplibre.mjs).
+      setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
       const mapa = new Map({
         container: contenedor.current,
         style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${CLAVE}&language=es`,
