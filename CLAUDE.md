@@ -218,6 +218,13 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   respuestas, escoge una tienda que dijo "La tengo" y a esa tienda le llega el aviso "el cliente va para allá:
   apártala". Sirve para que la pieza no se venda a otro, para que la tienda vea que la app le trae ventas y
   para medir ventas en la prueba de la semana 6. Entra en la semana 3. **No** se copia el regateo de precio.
+- 2026-10-02: solicitudes (`supabase/migrations/20261002000000_solicitudes.sql`): el cliente pregunta con
+  `enviar_solicitud(pieza, cantidad, moto, lat, lng)`; la base de datos escoge las tiendas (activas que manejan la
+  pieza, regla 5/10 km). Máximo 10 preguntas por hora por persona. Las tiendas responden insertando en
+  `respuestas` (no se puede cambiar ni borrar una respuesta; no se puede responder después de los 10 min).
+  `voy_para_alla(solicitud, tienda)` guarda `solicitud_tiendas.va_para_alla_en` (solo a una tienda que dijo
+  "La tengo", solo el cliente dueño). El tiempo promedio de respuesta se recalcula solo (últimas 50).
+  En vivo con Supabase Realtime: `solicitud_tiendas` y `respuestas`.
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
