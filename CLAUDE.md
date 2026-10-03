@@ -214,6 +214,10 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   La clave de MapTiler en Vercel es tipo **Config** (pública) y en MapTiler solo funciona desde
   `piezacerca.vercel.app` y `localhost:3000` (orígenes sin `https://`; el campo user-agent debe quedar vacío).
   **Semana 2 terminada.**
+- 2026-10-02 (aprobado por el dueño): botón **"Voy para allá"** (idea tipo InDrive). Cuando el cliente ve las
+  respuestas, escoge una tienda que dijo "La tengo" y a esa tienda le llega el aviso "el cliente va para allá:
+  apártala". Sirve para que la pieza no se venda a otro, para que la tienda vea que la app le trae ventas y
+  para medir ventas en la prueba de la semana 6. Entra en la semana 3. **No** se copia el regateo de precio.
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
