@@ -209,6 +209,11 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   tiendas" visible pero desactivado ("muy pronto", semana 3). Mapa con MapLibre (`maplibre-gl`) y el estilo
   `streets-v2` de MapTiler; clave en `NEXT_PUBLIC_MAPTILER_KEY` (`.env.local` y Vercel). Sin clave, la pestaña
   Mapa avisa y la Lista sigue funcionando.
+- 2026-10-02: el "worker" de MapLibre (dibuja las calles) se copia a `public/maplibre/` con
+  `scripts/copiar-maplibre.mjs`, que corre solo antes de `npm run dev` y `npm run build` (Next.js no lo incluye).
+  La clave de MapTiler en Vercel es tipo **Config** (pública) y en MapTiler solo funciona desde
+  `piezacerca.vercel.app` y `localhost:3000` (orígenes sin `https://`; el campo user-agent debe quedar vacío).
+  **Semana 2 terminada.**
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
