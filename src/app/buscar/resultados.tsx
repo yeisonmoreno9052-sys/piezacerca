@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { enlaceComoLlegar, formatoDistancia, formatoTiempoRespuesta } from "@/lib/formato";
 import { useUbicacion } from "@/lib/guardado-local";
 import { crearClienteNavegador } from "@/lib/supabase/client";
@@ -91,6 +91,14 @@ export function Resultados({
 
   const alSeleccionar = useCallback((id: string) => setSeleccionada(id), []);
 
+  // Misma lista entre renders: así el mapa no se vuelve a dibujar al tocar una tienda.
+  const { preguntables, otras, ordenadas } = useMemo(() => {
+    const p = (tiendas ?? []).filter((t) => t.puede_preguntar);
+    const o = (tiendas ?? []).filter((t) => !t.puede_preguntar);
+    return { preguntables: p, otras: o, ordenadas: [...p, ...o] };
+  }, [tiendas]);
+  const centro = useMemo(() => (lat !== undefined && lng !== undefined ? { lat, lng } : null), [lat, lng]);
+
   if (!ubicacion || cambiandoUbicacion) {
     return (
       <div className="rounded-2xl bg-tinta p-3">
@@ -106,9 +114,6 @@ export function Resultados({
     );
   }
 
-  const preguntables = (tiendas ?? []).filter((t) => t.puede_preguntar);
-  const otras = (tiendas ?? []).filter((t) => !t.puede_preguntar);
-  const ordenadas = [...preguntables, ...otras];
   const radio = tiendas?.[0]?.radio_km ?? 5;
   const tiendaSeleccionada = ordenadas.find((t) => t.id === seleccionada) ?? null;
 
@@ -170,7 +175,7 @@ export function Resultados({
       {tiendas && tiendas.length > 0 && vista === "mapa" && (
         <div className="mt-3">
           <MapaTiendas
-            centro={ubicacion}
+            centro={centro ?? ubicacion}
             tiendas={ordenadas}
             seleccionada={seleccionada}
             alSeleccionar={alSeleccionar}
