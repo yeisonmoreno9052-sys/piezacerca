@@ -245,6 +245,26 @@ export function SolicitudEnVivo({ id }: { id: string }) {
         <h2 className="mt-5 font-titulo text-lg font-bold">¿Quién tiene todo?</h2>
       )}
 
+      {esLista && (
+        <CombinacionSugerida
+          items={datos.items}
+          tiendas={datos.tiendas}
+          eligiendo={eligiendo === "combinacion"}
+          alElegir={async (a, b) => {
+            setEligiendo("combinacion");
+            setError(null);
+            const { error } = await crearClienteNavegador().rpc("voy_a_las_dos", {
+              solicitud: id,
+              tienda_a: a,
+              tienda_b: b,
+            });
+            if (error) setError("No pudimos avisarles a las tiendas. Inténtalo de nuevo.");
+            await recargar();
+            setEligiendo(null);
+          }}
+        />
+      )}
+
       <ul className="mt-3 space-y-2">
         {ordenadas.map(({ t, r }) => (
           <li key={t.id}>
@@ -261,6 +281,121 @@ export function SolicitudEnVivo({ id }: { id: string }) {
         ))}
       </ul>
     </>
+  );
+}
+
+// Si ninguna tienda tiene toda la lista, busca las DOS que juntas cubren más piezas,
+// al menor total y con el menor recorrido (cliente → primera tienda → segunda tienda).
+function mejorCombinacion(items: Item[], tiendas: Tienda[]) {
+  const conAlgo = tiendas.filter((t) => items.some((i) => t.respuestas.get(i.id)?.tiene)).slice(0, 12);
+  const mejorSola = Math.max(0, ...conAlgo.map((t) => items.filter((i) => t.respuestas.get(i.id)?.tiene).length));
+  if (mejorSola === items.length || conAlgo.length < 2) return null;
+
+  let mejor: {
+    a: Tienda;
+    b: Tienda;
+    deA: Item[];
+    deB: Item[];
+    faltan: Item[];
+    total: number;
+    recorrido: number;
+    entreTiendas: number;
+  } | null = null;
+
+  for (let x = 0; x < conAlgo.length; x++) {
+    for (let y = x + 1; y < conAlgo.length; y++) {
+      // La primera es la más cercana al cliente.
+      const [a, b] = conAlgo[x].metros <= conAlgo[y].metros ? [conAlgo[x], conAlgo[y]] : [conAlgo[y], conAlgo[x]];
+      const deA: Item[] = [];
+      const deB: Item[] = [];
+      const faltan: Item[] = [];
+      let total = 0;
+      for (const i of items) {
+        const ra = a.respuestas.get(i.id);
+        const rb = b.respuestas.get(i.id);
+        const pa = ra?.tiene ? (ra.precio ?? 0) : Infinity;
+        const pb = rb?.tiene ? (rb.precio ?? 0) : Infinity;
+        if (pa === Infinity && pb === Infinity) faltan.push(i);
+        else if (pa <= pb) {
+          deA.push(i);
+          total += pa * i.cantidad;
+        } else {
+          deB.push(i);
+          total += pb * i.cantidad;
+        }
+      }
+      if (deA.length === 0 || deB.length === 0) continue;
+      const entreTiendas = metrosEntre(a.lat, a.lng, b.lat, b.lng);
+      const candidato = { a, b, deA, deB, faltan, total, recorrido: a.metros + entreTiendas, entreTiendas };
+      if (
+        !mejor ||
+        candidato.faltan.length < mejor.faltan.length ||
+        (candidato.faltan.length === mejor.faltan.length && candidato.total < mejor.total) ||
+        (candidato.faltan.length === mejor.faltan.length &&
+          candidato.total === mejor.total &&
+          candidato.recorrido < mejor.recorrido)
+      ) {
+        mejor = candidato;
+      }
+    }
+  }
+  // Solo vale la pena si las dos juntas cubren más que la mejor tienda sola.
+  if (!mejor || items.length - mejor.faltan.length <= mejorSola) return null;
+  return mejor;
+}
+
+function CombinacionSugerida({
+  items,
+  tiendas,
+  eligiendo,
+  alElegir,
+}: {
+  items: Item[];
+  tiendas: Tienda[];
+  eligiendo: boolean;
+  alElegir: (a: string, b: string) => void;
+}) {
+  const c = mejorCombinacion(items, tiendas);
+  if (!c) return null;
+  const cubre = items.length - c.faltan.length;
+  const yaVa = c.a.vaParaAlla && c.b.vaParaAlla;
+  const nombres = (lista: Item[]) => lista.map((i) => `${i.pieza}${i.cantidad > 1 ? ` × ${i.cantidad}` : ""}`).join(", ");
+
+  return (
+    <div className="mt-3 rounded-2xl border-2 border-naranja bg-[#FCE9DD] p-4">
+      <p className="text-xs font-bold uppercase tracking-wider text-[#8A3508]">Combinación sugerida</p>
+      <p className="mt-1 font-bold">
+        {c.a.nombre} + {c.b.nombre}
+      </p>
+      <p className="text-sm">
+        {cubre === items.length ? `Tienen las ${items.length} piezas` : `Tienen ${cubre} de ${items.length} piezas`}
+        {" · "}total <strong>{formatoPesos(c.total)}</strong>
+        {" · "}están a {formatoDistancia(c.entreTiendas)} una de la otra
+      </p>
+      <ul className="mt-2 space-y-1 text-sm">
+        <li>
+          <strong>De {c.a.nombre}:</strong> {nombres(c.deA)}
+        </li>
+        <li>
+          <strong>De {c.b.nombre}:</strong> {nombres(c.deB)}
+        </li>
+        {c.faltan.length > 0 && <li className="text-ambar">Ninguna tiene: {nombres(c.faltan)}</li>}
+      </ul>
+      {yaVa ? (
+        <p className="mt-3 rounded-xl bg-verde-suave p-3 text-sm text-verde">
+          <strong>Vas a las dos.</strong> Las dos tiendas ya saben que vas. Abajo están sus botones de WhatsApp y Cómo llegar.
+        </p>
+      ) : (
+        <button
+          type="button"
+          onClick={() => alElegir(c.a.id, c.b.id)}
+          disabled={eligiendo}
+          className="mt-3 min-h-11 w-full rounded-xl bg-naranja px-4 font-bold text-white disabled:opacity-60"
+        >
+          {eligiendo ? "Avisando a las tiendas…" : "Voy a las dos"}
+        </button>
+      )}
+    </div>
   );
 }
 
