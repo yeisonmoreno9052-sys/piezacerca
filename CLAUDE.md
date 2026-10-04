@@ -233,6 +233,13 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   ("Salir del modo" lleva a `/?modo=cliente`) y ven en cualquier pantalla la barra "Tienes N solicitudes nuevas"
   (`src/app/aviso-tienda.tsx`). `obtenerSesion()` ahora también trae `tiendaId`.
   Prueba completa con dos celulares hecha el 2026-10-04: funcionó (pregunta, respuesta, precio en vivo, Voy para allá).
+- 2026-10-05 (aprobado): lista de varias piezas = opción **A + C**. `/lista`: paquetes ya armados (tabla `paquetes`,
+  4 iniciales: Mantenimiento básico, Frenos, Arrastre completo, Bombillos), "Mis listas" y lista en blanco; luego
+  se edita (cantidades, quitar, guardar) y se pregunta. Una moto por lista, **máximo 15 piezas**. La tienda marca
+  pieza por pieza y envía todo de una vez. El cliente ve "N de M", total y qué le falta (base de "¿Quién tiene
+  todo?"). SQL en `supabase/migrations/20261005000000_listas.sql`: `enviar_solicitud_lista(items, moto, lat, lng)`
+  (le llega a las tiendas que manejan al menos una pieza); `enviar_solicitud` ahora es una lista de 1.
+  La lista en preparación se guarda en el celular (`piezacerca:lista-borrador`).
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
