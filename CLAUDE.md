@@ -247,6 +247,15 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   Botón "Voy a las dos" → `voy_a_las_dos(solicitud, tienda_a, tienda_b)`
   (`supabase/migrations/20261006000000_combinacion.sql`). Probado con dos tiendas de prueba el 2026-10-06: funcionó.
   Hay dos tiendas de prueba activas en Robledo ("Tienda de prueba … (borrar)"): borrarlas antes del piloto.
+- 2026-10-07 (pedido por el dueño, adelantado): **notificaciones push** a las tiendas y app instalable (PWA).
+  Al insertar en `solicitud_tiendas` (solicitud nueva) o marcar `va_para_alla_en`, el trigger
+  `avisar_tienda_push` llama con pg_net a `/api/push` (clave compartida `PUSH_SECRETO`, guardada en
+  `configuracion_privada` y en Vercel), y la ruta manda la notificación con `web-push` a `push_suscripciones`
+  de los usuarios de esa tienda. Si el aviso falla, la solicitud igual llega. Claves VAPID: pública en
+  `NEXT_PUBLIC_VAPID_PUBLIC_KEY` (Config), privada en `VAPID_PRIVATE_KEY` (Secret). Los secretos están solo en
+  `.env.local` y `.secretos/` (ignorados por Git). Service worker `public/sw.js`, manifest `src/app/manifest.ts`,
+  íconos `/icono/[96|180|192|512]`. Botón "Activar notificaciones" en el Modo tienda (iPhone: instalar primero).
+  No se usa la clave secreta de Supabase.
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
