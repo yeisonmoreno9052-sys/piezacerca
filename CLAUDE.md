@@ -225,6 +225,14 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   `voy_para_alla(solicitud, tienda)` guarda `solicitud_tiendas.va_para_alla_en` (solo a una tienda que dijo
   "La tengo", solo el cliente dueño). El tiempo promedio de respuesta se recalcula solo (últimas 50).
   En vivo con Supabase Realtime: `solicitud_tiendas` y `respuestas`.
+- 2026-10-04: pantallas de la semana 3: `/solicitud/[id]` (cliente, en vivo con contador y "Voy para allá"; el
+  precio que responde la tienda es **por unidad**) y `/tienda` (Modo tienda). Al entrar, la app vuelve a la
+  página de origen (`?volver=` / `?siguiente=`, solo rutas internas: `src/lib/ruta-segura.ts`).
+  Sonido de aviso en `src/lib/aviso-sonoro.ts` (se activa con un toque; suena con cada solicitud nueva, llegue en
+  vivo o por la revisión de respaldo). Usuarios de tienda: entran directo a `/tienda` al abrir el inicio
+  ("Salir del modo" lleva a `/?modo=cliente`) y ven en cualquier pantalla la barra "Tienes N solicitudes nuevas"
+  (`src/app/aviso-tienda.tsx`). `obtenerSesion()` ahora también trae `tiendaId`.
+  Prueba completa con dos celulares hecha el 2026-10-04: funcionó (pregunta, respuesta, precio en vivo, Voy para allá).
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
