@@ -160,7 +160,7 @@ function EscogerLista({
       </div>
 
       <div className="space-y-6 px-4 pb-10 pt-5">
-        <section>
+        <section hidden={paquetes.length === 0}>
           <h2 className={etiqueta}>Empieza con una lista lista</h2>
           <ul className="mt-2 space-y-2">
             {paquetes.map((p) => (
