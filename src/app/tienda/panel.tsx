@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { formatoDistancia, formatoPesos } from "@/lib/formato";
+import { activarAudio, sonarAviso } from "@/lib/aviso-sonoro";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 
 type Solicitud = {
@@ -76,25 +77,6 @@ async function cargar(tiendaId: string, tiendaLat: number, tiendaLng: number): P
   });
 }
 
-// Tres pitidos cortos con el parlante del celular o del PC (sin archivos de sonido).
-function sonarAviso() {
-  try {
-    const ctx = new AudioContext();
-    [0, 0.25, 0.5].forEach((inicio) => {
-      const osc = ctx.createOscillator();
-      const vol = ctx.createGain();
-      osc.frequency.value = 880;
-      vol.gain.value = 0.3;
-      osc.connect(vol).connect(ctx.destination);
-      osc.start(ctx.currentTime + inicio);
-      osc.stop(ctx.currentTime + inicio + 0.15);
-    });
-    navigator.vibrate?.([200, 100, 200]);
-  } catch {
-    // sin sonido disponible
-  }
-}
-
 export function PanelTienda({
   tiendaId,
   tiendaLat,
@@ -108,51 +90,67 @@ export function PanelTienda({
   const [ahora, setAhora] = useState(() => Date.now());
   const [sonido, setSonido] = useState(false);
   const sonidoRef = useRef(false);
+  // Lo que la tienda ya vio (solicitudes nuevas y "voy para allá"), para sonar solo con lo nuevo.
+  const vistos = useRef<Set<string> | null>(null);
+
+  // Suena cuando aparece algo nuevo, llegue en vivo o por la revisión de respaldo.
+  const avisarSiHayAlgoNuevo = useCallback((lista: Solicitud[]) => {
+    const claves = [
+      ...lista.filter((s) => !s.respuesta && s.venceEn > Date.now()).map((s) => `nueva:${s.id}`),
+      ...lista.filter((s) => s.vaParaAllaEn).map((s) => `va:${s.id}`),
+    ];
+    const antes = vistos.current;
+    vistos.current = new Set([...(antes ?? []), ...claves]);
+    if (antes && claves.some((c) => !antes.has(c))) {
+      if (sonidoRef.current) sonarAviso();
+      document.title = "Nueva solicitud · PiezaCerca";
+    }
+  }, []);
 
   const recargar = useCallback(
     () => cargar(tiendaId, tiendaLat, tiendaLng).then(setSolicitudes),
     [tiendaId, tiendaLat, tiendaLng],
   );
 
-  // En vivo: llega una solicitud nueva → suena y se muestra. Respaldo: revisar cada 20 s.
+  // En vivo con Supabase Realtime; por si acaso, también se revisa cada 10 s.
   useEffect(() => {
     let vigente = true;
-    const traer = () => cargar(tiendaId, tiendaLat, tiendaLng).then((d) => vigente && setSolicitudes(d));
+    const traer = () =>
+      cargar(tiendaId, tiendaLat, tiendaLng).then((d) => {
+        if (!vigente) return;
+        avisarSiHayAlgoNuevo(d);
+        setSolicitudes(d);
+      });
     traer();
     const supabase = crearClienteNavegador();
     const canal = supabase
       .channel(`tienda-${tiendaId}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "solicitud_tiendas", filter: `tienda_id=eq.${tiendaId}` },
-        () => {
-          if (sonidoRef.current) sonarAviso();
-          traer();
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "solicitud_tiendas", filter: `tienda_id=eq.${tiendaId}` },
-        () => {
-          if (sonidoRef.current) sonarAviso();
-          traer();
-        },
+        { event: "*", schema: "public", table: "solicitud_tiendas", filter: `tienda_id=eq.${tiendaId}` },
+        traer,
       )
       .subscribe();
-    const respaldo = setInterval(traer, 20000);
+    const respaldo = setInterval(traer, 10000);
+    const volverTitulo = () => {
+      if (document.visibilityState === "visible") document.title = "Modo tienda · PiezaCerca";
+    };
+    document.addEventListener("visibilitychange", volverTitulo);
     const reloj = setInterval(() => setAhora(Date.now()), 1000);
     return () => {
       vigente = false;
       clearInterval(respaldo);
       clearInterval(reloj);
+      document.removeEventListener("visibilitychange", volverTitulo);
       supabase.removeChannel(canal);
     };
-  }, [tiendaId, tiendaLat, tiendaLng]);
+  }, [tiendaId, tiendaLat, tiendaLng, avisarSiHayAlgoNuevo]);
 
   function activarSonido() {
-    sonidoRef.current = true;
+    // Se activa con el toque de la persona: así el navegador deja sonar los avisos después.
+    sonidoRef.current = activarAudio();
     setSonido(true);
-    sonarAviso(); // de prueba, y para que el navegador permita sonar después
+    sonarAviso(); // de prueba
   }
 
   if (solicitudes === null) {
