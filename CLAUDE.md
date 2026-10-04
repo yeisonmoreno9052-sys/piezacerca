@@ -240,6 +240,12 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   todo?"). SQL en `supabase/migrations/20261005000000_listas.sql`: `enviar_solicitud_lista(items, moto, lat, lng)`
   (le llega a las tiendas que manejan al menos una pieza); `enviar_solicitud` ahora es una lista de 1.
   La lista en preparación se guarda en el celular (`piezacerca:lista-borrador`).
+  Prueba con dos celulares de la lista hecha el 2026-10-05: funcionó.
+- 2026-10-06: "¿Quién tiene todo?" con **combinación sugerida**: si ninguna tienda tiene toda la lista, la pantalla
+  del cliente busca las dos tiendas que juntas cubren más piezas; a igual cobertura, la de menor total y luego el
+  menor recorrido (cliente → tienda más cercana → la otra). Cada pieza se toma de la más barata de las dos.
+  Botón "Voy a las dos" → `voy_a_las_dos(solicitud, tienda_a, tienda_b)`
+  (`supabase/migrations/20261006000000_combinacion.sql`).
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
