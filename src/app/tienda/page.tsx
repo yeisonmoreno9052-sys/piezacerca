@@ -60,7 +60,7 @@ export default async function Tienda() {
             <p className="text-xs font-bold uppercase tracking-wider text-[#9FD8B8]">Modo tienda</p>
             <h1 className="truncate font-titulo text-2xl font-bold">{tienda.nombre}</h1>
           </div>
-          <Link href="/" className="flex min-h-11 shrink-0 items-center rounded-full bg-white/10 px-4 text-sm font-semibold">
+          <Link href="/?modo=cliente" className="flex min-h-11 shrink-0 items-center rounded-full bg-white/10 px-4 text-sm font-semibold">
             Salir del modo
           </Link>
         </div>

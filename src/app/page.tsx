@@ -1,11 +1,18 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { obtenerSesion } from "@/lib/sesion";
 import { salir } from "./acciones";
 import { Buscador, type Moto, type Pieza } from "./buscador";
 
-export default async function Inicio() {
-  const { supabase, usuarioId, perfil } = await obtenerSesion();
-  const [{ data: motos }, { data: piezas }, { count: tiendasDelUsuario }] = await Promise.all([
+export default async function Inicio({ searchParams }: PageProps<"/">) {
+  const { supabase, usuarioId, perfil, tiendaId } = await obtenerSesion();
+  const { modo } = await searchParams;
+
+  // Los usuarios de una tienda entran directo al Modo tienda
+  // (salvo que hayan tocado "Salir del modo", que trae ?modo=cliente).
+  if (tiendaId && modo !== "cliente") redirect("/tienda");
+
+  const [{ data: motos }, { data: piezas }] = await Promise.all([
     supabase
       .from("motos")
       .select("id, marca, modelo, cilindraje")
@@ -13,12 +20,6 @@ export default async function Inicio() {
       .order("modelo")
       .order("cilindraje"),
     supabase.from("piezas").select("id, nombre, categoria").order("nombre"),
-    usuarioId
-      ? supabase
-          .from("usuarios_tienda")
-          .select("tienda_id", { count: "exact", head: true })
-          .eq("usuario_id", usuarioId)
-      : Promise.resolve({ count: 0 }),
   ]);
 
   const enlaceCuenta =
@@ -30,7 +31,7 @@ export default async function Inicio() {
         Pieza<span className="text-[#F07A3A]">Cerca</span>
       </Link>
       <div className="flex items-center gap-2">
-        {(tiendasDelUsuario ?? 0) > 0 && (
+        {tiendaId && (
           <Link href="/tienda" className={`${enlaceCuenta} bg-tienda`}>
             Modo tienda
           </Link>

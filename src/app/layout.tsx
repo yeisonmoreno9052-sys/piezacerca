@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Figtree } from "next/font/google";
+import { obtenerSesion } from "@/lib/sesion";
+import { AvisoTienda } from "./aviso-tienda";
 import "./globals.css";
 
 const bricolage = Bricolage_Grotesque({
@@ -22,13 +24,18 @@ export const viewport: Viewport = {
   themeColor: "#F5F3EE",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const { tiendaId } = await obtenerSesion();
+
   return (
     <html
       lang="es-CO"
       className={`${bricolage.variable} ${figtree.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {tiendaId && <AvisoTienda tiendaId={tiendaId} />}
+        {children}
+      </body>
     </html>
   );
 }
