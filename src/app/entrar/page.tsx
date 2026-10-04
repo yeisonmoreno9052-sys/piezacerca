@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Entrar({ searchParams }: PageProps<"/entrar">) {
-  const { error } = await searchParams;
+  const { error, volver } = await searchParams;
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-8">
@@ -28,7 +28,7 @@ export default async function Entrar({ searchParams }: PageProps<"/entrar">) {
         </p>
       )}
 
-      <FormularioEntrar />
+      <FormularioEntrar volver={typeof volver === "string" ? volver : undefined} />
     </main>
   );
 }

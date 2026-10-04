@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { rutaSegura } from "@/lib/ruta-segura";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 
 function mensajeDeError(mensaje: string) {
@@ -21,7 +22,8 @@ function mensajeDeError(mensaje: string) {
   return "Algo salió mal. Inténtalo de nuevo en un momento.";
 }
 
-export function FormularioEntrar() {
+export function FormularioEntrar({ volver }: { volver?: string }) {
+  const destino = rutaSegura(volver);
   const router = useRouter();
   const [paso, setPaso] = useState<"correo" | "codigo" | "contrasena">("correo");
   const [correo, setCorreo] = useState("");
@@ -37,7 +39,9 @@ export function FormularioEntrar() {
     const supabase = crearClienteNavegador();
     const { error } = await supabase.auth.signInWithOtp({
       email: correo.trim(),
-      options: { emailRedirectTo: `${window.location.origin}/auth/confirmar` },
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/confirmar?siguiente=${encodeURIComponent(destino)}`,
+      },
     });
     setCargando(false);
     if (error) setError(mensajeDeError(error.message));
@@ -59,7 +63,7 @@ export function FormularioEntrar() {
       setError(mensajeDeError(error.message));
       return;
     }
-    router.replace("/");
+    router.replace(destino);
     router.refresh();
   }
 
@@ -78,7 +82,7 @@ export function FormularioEntrar() {
       setError(mensajeDeError(error.message));
       return;
     }
-    router.replace("/");
+    router.replace(destino);
     router.refresh();
   }
 

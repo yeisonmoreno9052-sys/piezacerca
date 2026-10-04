@@ -5,6 +5,7 @@ import { enlaceComoLlegar, formatoDistancia, formatoTiempoRespuesta } from "@/li
 import { useUbicacion } from "@/lib/guardado-local";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { SelectorUbicacion } from "../selector-ubicacion";
+import { BotonPreguntar } from "./boton-preguntar";
 import { MAPA_DISPONIBLE, MapaTiendas } from "./mapa-tiendas";
 
 export type TiendaCercana = {
@@ -53,9 +54,13 @@ function useVista(): [Vista, (v: Vista) => void] {
 }
 
 export function Resultados({
+  piezaId,
+  motoId,
   categoria,
   marcaMoto,
 }: {
+  piezaId: number;
+  motoId: number | null;
   categoria: string;
   marcaMoto: string | null;
 }) {
@@ -231,18 +236,13 @@ export function Resultados({
       {tiendas && tiendas.length > 0 && (
         <div className="sticky bottom-0 -mx-4 mt-6 border-t border-tinta/10 bg-fondo px-4 pb-4 pt-3">
           {preguntables.length > 0 ? (
-            <>
-              <button
-                type="button"
-                disabled
-                className="min-h-13 w-full rounded-2xl bg-naranja px-4 font-bold text-white opacity-60"
-              >
-                Preguntar a {preguntables.length === 1 ? "la tienda" : `las ${preguntables.length} tiendas`} · muy pronto
-              </button>
-              <p className="mt-1 text-center text-xs opacity-70">
-                Pronto podrás preguntar a todas a la vez y te responderán en máximo 10 minutos.
-              </p>
-            </>
+            <BotonPreguntar
+              cuantas={preguntables.length}
+              piezaId={piezaId}
+              motoId={motoId}
+              lat={ubicacion.lat}
+              lng={ubicacion.lng}
+            />
           ) : (
             <p className="text-center text-sm opacity-80">
               Ninguna tienda confirmada maneja esta pieza cerca de ti todavía.

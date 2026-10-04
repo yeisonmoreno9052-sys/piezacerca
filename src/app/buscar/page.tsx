@@ -50,7 +50,12 @@ export default async function Buscar({ searchParams }: PageProps<"/buscar">) {
 
       <div className="mt-4">
         {datosPieza ? (
-          <Resultados categoria={datosPieza.categoria} marcaMoto={datosMoto?.marca ?? null} />
+          <Resultados
+            piezaId={idPieza}
+            motoId={datosMoto ? idMoto : null}
+            categoria={datosPieza.categoria}
+            marcaMoto={datosMoto?.marca ?? null}
+          />
         ) : (
           <p className="rounded-2xl bg-white p-4 text-sm">
             No encontramos esa pieza. Vuelve y búscala otra vez.
