@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { formatoDistancia, formatoPesos } from "@/lib/formato";
 import { activarAudio, sonarAviso } from "@/lib/aviso-sonoro";
 import { crearClienteNavegador } from "@/lib/supabase/client";
+import { ActivarNotificaciones } from "./activar-notificaciones";
 
 type Item = {
   id: number;
@@ -188,6 +189,8 @@ export function PanelTienda({
 
   return (
     <div className="space-y-5 px-4 pb-10 pt-4">
+      <ActivarNotificaciones />
+
       {!sonido && (
         <button
           type="button"

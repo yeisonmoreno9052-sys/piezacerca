@@ -42,3 +42,6 @@ next-env.d.ts
 
 # copiados desde node_modules en cada build (scripts/copiar-maplibre.mjs)
 /public/maplibre/
+
+# archivos con secretos que el dueño pega a mano (nunca a GitHub)
+/.secretos/

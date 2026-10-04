@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   title: "PiezaCerca",
   description:
     "Encuentra repuestos de moto en tiendas cercanas de Medellín sin llamar a cada una.",
+  // Para instalarla en iPhone ("Agregar a inicio") con su nombre e ícono.
+  appleWebApp: { capable: true, title: "PiezaCerca", statusBarStyle: "default" },
+  icons: { apple: "/icono/180" },
 };
 
 export const viewport: Viewport = {
