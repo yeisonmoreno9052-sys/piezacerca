@@ -287,6 +287,10 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
 - Foto de la pieza (idea, fuera de la v1 hasta que el dueño decida): 1) foto adjunta a la solicitud (lo más
   simple, candidata a la semana 3 si los mecánicos la piden en el trabajo de campo); 2) foto que reconoce la
   pieza con inteligencia artificial (después); 3) búsqueda de piezas parecidas por foto (no por ahora).
+  2026-10-08: se mostró al dueño el diseño de "buscar con foto" (botón de cámara → "Parece que es: X" con
+  opciones para corregir → buscar; la foto puede viajar a la tienda). Le gustó; decide después de las
+  entrevistas en tiendas y talleres. Necesitaría cuenta de Anthropic (pago por uso, ~US$0,01–0,02 por foto con
+  Claude Opus 5.5 o ~US$0,003 con Claude Haiku 4.5, aproximado) y límite de fotos por persona.
 - Nombre definitivo (PiezaCerca es provisional). Finalistas que el dueño va a probar con mecánicos y tiendas
   (2026-10-08): **Lo Tengo** (lotengo.co y lotengo.com.co libres; .com ocupado), **MotoLlave** (motollave.com y
   .co libres), **Al Toque Moto** (altoquemoto.com/.co y altoque.co libres), **Arrancó** (arranco.co libre).
