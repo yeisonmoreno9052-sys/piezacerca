@@ -257,7 +257,12 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   íconos `/icono/[96|180|192|512]`. Botón "Activar notificaciones" en el Modo tienda (iPhone: instalar primero).
   No se usa la clave secreta de Supabase.
   Probado el 2026-10-07 con el celular de la tienda bloqueado: llegaron la notificación de la solicitud nueva
-  y la de "Voy para allá".
+  y la de "Voy para allá". Guía para tiendas (instalar, notificaciones, tono, batería) en Claude Docs:
+  https://claude.ai/code/artifact/0916e977-fff0-471c-8808-b5ec5802b841
+- 2026-10-07 (aprobado): **modo mostrador** = opción **A** (tablero de tres columnas: Nuevas · Van para allá ·
+  Respondidas hoy) **+ teclas T / N** (Enter envía el precio, Esc vuelve) en la solicitud más antigua.
+  `/tienda/mostrador`; el sonido se repite cada 8 s mientras haya solicitudes sin responder. La lógica de cargar
+  solicitudes, tiempo real y sonido es compartida en `src/app/tienda/datos.ts` (`useSolicitudesTienda`).
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
