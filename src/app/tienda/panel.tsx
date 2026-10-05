@@ -170,6 +170,14 @@ export function TarjetaSolicitud({
   }
 
   const precioDe = (id: number) => Number(marcas[id]?.precio || "0");
+
+  // "La tengo": si la tienda ya había cotizado esta pieza, su último precio queda escrito.
+  function tengo(item: (typeof s.items)[number]) {
+    marcar(item.id, {
+      tiene: true,
+      precio: marcas[item.id]?.precio || (item.sugerido ? String(item.sugerido.precio) : ""),
+    });
+  }
   const total = s.items.reduce((t, i) => t + (marcas[i.id]?.tiene ? precioDe(i.id) * i.cantidad : 0), 0);
 
   async function enviar(todasNo = false) {
@@ -223,7 +231,7 @@ export function TarjetaSolicitud({
       const tecla = e.key.toLowerCase();
       if (tecla === "t") {
         e.preventDefault();
-        marcar(s.items[0].id, { tiene: true });
+        tengo(s.items[0]);
         setPaso("precio");
       } else if (tecla === "n" && !enviando) {
         e.preventDefault();
@@ -261,7 +269,7 @@ export function TarjetaSolicitud({
           <button
             type="button"
             onClick={() => {
-              marcar(s.items[0].id, { tiene: true });
+              tengo(s.items[0]);
               setPaso("precio");
             }}
             className="flex min-h-16 w-full items-center justify-center gap-2 rounded-2xl bg-verde text-lg font-bold text-white"
@@ -308,6 +316,7 @@ export function TarjetaSolicitud({
               {enviando ? "…" : "Enviar"}
             </button>
           </div>
+          <NotaSugerido item={s.items[0]} />
           {s.items[0].cantidad > 1 && total > 0 && (
             <p className="mt-1 text-sm opacity-70">
               Total para {s.items[0].cantidad}: {formatoPesos(total)}
@@ -341,7 +350,7 @@ export function TarjetaSolicitud({
                     <button
                       type="button"
                       aria-pressed={m?.tiene === true}
-                      onClick={() => marcar(i.id, { tiene: true })}
+                      onClick={() => tengo(i)}
                       className={`min-h-11 rounded-xl text-sm font-bold ${
                         m?.tiene === true ? "bg-verde text-white" : "border-2 border-verde text-verde"
                       }`}
@@ -373,6 +382,7 @@ export function TarjetaSolicitud({
                         onChange={(e) => marcar(i.id, { precio: e.target.value.replace(/\D/g, "").slice(0, 8) })}
                         className={`${campoPrecio} w-full`}
                       />
+                      <NotaSugerido item={i} />
                     </div>
                   )}
                 </li>
@@ -408,5 +418,18 @@ export function TarjetaSolicitud({
         </p>
       )}
     </div>
+  );
+}
+
+// "Último precio que diste: $ 85.000 (para esta moto, hace 3 días)". Solo lo ve la tienda.
+function NotaSugerido({ item }: { item: Solicitud["items"][number] }) {
+  if (!item.sugerido) return null;
+  const { precio, mismaMoto, dias } = item.sugerido;
+  const cuando = dias === 0 ? "hoy" : dias === 1 ? "ayer" : `hace ${dias} días`;
+  return (
+    <p className="mt-1 text-xs opacity-70">
+      Último precio que diste: <strong>{formatoPesos(precio)}</strong> ({mismaMoto ? "para esta moto" : "para otra moto"}, {cuando}).
+      Ya quedó escrito: cámbialo si es distinto.
+    </p>
   );
 }

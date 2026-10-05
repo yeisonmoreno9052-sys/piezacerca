@@ -9,9 +9,12 @@ import { crearClienteNavegador } from "@/lib/supabase/client";
 
 export type Item = {
   id: number;
+  piezaId: number;
   pieza: string;
   cantidad: number;
   respuesta: { tiene: boolean; precio: number | null } | null;
+  // Precio sugerido: el último que esta tienda dio por esta pieza (de preferencia para la misma moto).
+  sugerido: { precio: number; mismaMoto: boolean; dias: number } | null;
 };
 
 export type Solicitud = {
@@ -54,17 +57,37 @@ export function loQueTiene(s: Solicitud) {
 export async function cargar(tiendaId: string, tiendaLat: number, tiendaLng: number): Promise<Solicitud[]> {
   const supabase = crearClienteNavegador();
   const desde = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  const [{ data: envios }, { data: respuestas }] = await Promise.all([
+  const [{ data: envios }, { data: respuestas }, { data: historial }] = await Promise.all([
     supabase
       .from("solicitud_tiendas")
       .select(
-        "solicitud_id, enviada_en, respondida_en, va_para_alla_en, solicitudes(lat, lng, vence_en, motos(marca, modelo, cilindraje), solicitud_items(id, cantidad, piezas(nombre)))",
+        "solicitud_id, enviada_en, respondida_en, va_para_alla_en, solicitudes(lat, lng, vence_en, moto_id, motos(marca, modelo, cilindraje), solicitud_items(id, cantidad, pieza_id, piezas(nombre)))",
       )
       .eq("tienda_id", tiendaId)
       .gte("enviada_en", desde)
       .order("enviada_en", { ascending: false }),
     supabase.from("respuestas").select("item_id, tiene, precio").eq("tienda_id", tiendaId).gte("respondida_en", desde),
+    // Precios que esta tienda ya dio (solo los suyos: la base de datos no deja ver los de otras tiendas).
+    supabase
+      .from("respuestas")
+      .select("precio, respondida_en, solicitud_items(pieza_id, solicitudes(moto_id))")
+      .eq("tienda_id", tiendaId)
+      .eq("tiene", true)
+      .order("respondida_en", { ascending: false })
+      .limit(300),
   ]);
+
+  const anteriores = (historial ?? []).flatMap((h) => {
+    const item = uno(h.solicitud_items as unknown as { pieza_id: number; solicitudes: { moto_id: number | null } | null });
+    if (!item || h.precio == null) return [];
+    return [{ piezaId: item.pieza_id, motoId: uno(item.solicitudes)?.moto_id ?? null, precio: h.precio as number, en: new Date(h.respondida_en).getTime() }];
+  });
+  function sugerir(piezaId: number, motoId: number | null) {
+    const misma = motoId != null ? anteriores.find((a) => a.piezaId === piezaId && a.motoId === motoId) : undefined;
+    const cualquiera = misma ?? anteriores.find((a) => a.piezaId === piezaId);
+    if (!cualquiera) return null;
+    return { precio: cualquiera.precio, mismaMoto: Boolean(misma), dias: Math.floor((Date.now() - cualquiera.en) / 86400000) };
+  }
 
   return (envios ?? []).flatMap((e) => {
     const s = uno(
@@ -72,8 +95,9 @@ export async function cargar(tiendaId: string, tiendaLat: number, tiendaLng: num
         lat: number;
         lng: number;
         vence_en: string;
+        moto_id: number | null;
         motos: { marca: string; modelo: string; cilindraje: number } | null;
-        solicitud_items: { id: number; cantidad: number; piezas: { nombre: string } | { nombre: string }[] }[];
+        solicitud_items: { id: number; cantidad: number; pieza_id: number; piezas: { nombre: string } | { nombre: string }[] }[];
       },
     );
     if (!s || !s.solicitud_items?.length) return [];
@@ -84,9 +108,11 @@ export async function cargar(tiendaId: string, tiendaLat: number, tiendaLng: num
         const r = (respuestas ?? []).find((x) => x.item_id === i.id);
         return {
           id: i.id,
+          piezaId: i.pieza_id,
           pieza: uno(i.piezas)?.nombre ?? "Pieza",
           cantidad: i.cantidad,
           respuesta: r ? { tiene: r.tiene, precio: r.precio } : null,
+          sugerido: sugerir(i.pieza_id, s.moto_id),
         };
       });
     return [

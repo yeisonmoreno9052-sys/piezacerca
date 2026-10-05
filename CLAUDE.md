@@ -271,7 +271,11 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   códigos `EM-XXXXXX` (48 h, un solo uso) y puede quitarlos. Máximo 10 intentos de código por hora por persona.
   SQL: `supabase/migrations/20261008000000_activacion.sql` (`generar_codigo_activacion`, `usar_codigo`,
   `generar_codigo_empleado`, `mi_equipo`, `quitar_empleado`). Crear cuenta manda correo de confirmación
-  mientras no haya correo propio (límite de ~2 correos por hora).
+  mientras no haya correo propio (límite de ~2 correos por hora). Probado por el dueño el 2026-10-08: funcionó.
+- 2026-10-08 (semana 5 tarea 2): **precio sugerido**. Al tocar "La tengo", el precio queda escrito con el último
+  que ESA tienda dio por esa pieza: primero para la misma moto, si no, para cualquier moto (últimas 300
+  respuestas con "La tengo"). Nota "Último precio que diste: $ X (para esta moto, hace N días)". Sin SQL nuevo:
+  se calcula en `src/app/tienda/datos.ts` con los permisos existentes (cada tienda solo lee sus respuestas).
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
