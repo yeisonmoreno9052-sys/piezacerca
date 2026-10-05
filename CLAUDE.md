@@ -256,6 +256,8 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   `.env.local` y `.secretos/` (ignorados por Git). Service worker `public/sw.js`, manifest `src/app/manifest.ts`,
   íconos `/icono/[96|180|192|512]`. Botón "Activar notificaciones" en el Modo tienda (iPhone: instalar primero).
   No se usa la clave secreta de Supabase.
+  Probado el 2026-10-07 con el celular de la tienda bloqueado: llegaron la notificación de la solicitud nueva
+  y la de "Voy para allá".
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
