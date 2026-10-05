@@ -20,22 +20,40 @@ export function audioActivo() {
   return contexto !== null;
 }
 
+// Un timbre "din-don" (dos veces): tono agradable pero fácil de oír en el mostrador.
+// Cada nota sube rápido y se apaga suave, para que no suene áspero ni haga "clic".
+const NOTAS = [
+  { inicio: 0, frecuencia: 1046.5 }, // do (agudo): "din"
+  { inicio: 0.22, frecuencia: 784 }, // sol: "don"
+  { inicio: 0.7, frecuencia: 1046.5 },
+  { inicio: 0.92, frecuencia: 784 },
+];
+
 export function sonarAviso() {
   navigator.vibrate?.([200, 100, 200, 100, 200]);
   if (!contexto) return;
   try {
     void contexto.resume();
     const ctx = contexto;
-    [0, 0.3, 0.6].forEach((inicio) => {
-      const osc = ctx.createOscillator();
-      const vol = ctx.createGain();
-      osc.type = "square";
-      osc.frequency.value = 880;
-      vol.gain.value = 0.25;
-      osc.connect(vol).connect(ctx.destination);
-      osc.start(ctx.currentTime + inicio);
-      osc.stop(ctx.currentTime + inicio + 0.18);
-    });
+    const ahora = ctx.currentTime;
+    for (const { inicio, frecuencia } of NOTAS) {
+      // Dos osciladores (nota + su octava, bajita) suenan más a timbre que a pitido.
+      for (const [multiplo, volumen] of [
+        [1, 0.5],
+        [2, 0.12],
+      ] as const) {
+        const osc = ctx.createOscillator();
+        const vol = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = frecuencia * multiplo;
+        vol.gain.setValueAtTime(0.0001, ahora + inicio);
+        vol.gain.exponentialRampToValueAtTime(volumen, ahora + inicio + 0.02);
+        vol.gain.exponentialRampToValueAtTime(0.0001, ahora + inicio + 0.6);
+        osc.connect(vol).connect(ctx.destination);
+        osc.start(ahora + inicio);
+        osc.stop(ahora + inicio + 0.65);
+      }
+    }
   } catch {
     // sin sonido disponible
   }
