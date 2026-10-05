@@ -287,7 +287,10 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
 - Foto de la pieza (idea, fuera de la v1 hasta que el dueño decida): 1) foto adjunta a la solicitud (lo más
   simple, candidata a la semana 3 si los mecánicos la piden en el trabajo de campo); 2) foto que reconoce la
   pieza con inteligencia artificial (después); 3) búsqueda de piezas parecidas por foto (no por ahora).
-- Nombre definitivo (PiezaCerca es provisional).
+- Nombre definitivo (PiezaCerca es provisional). Finalistas que el dueño va a probar con mecánicos y tiendas
+  (2026-10-08): **Lo Tengo** (lotengo.co y lotengo.com.co libres; .com ocupado), **MotoLlave** (motollave.com y
+  .co libres), **Al Toque Moto** (altoquemoto.com/.co y altoque.co libres), **Arrancó** (arranco.co libre).
+  Revisar marca en la SIC antes de comprar el dominio. El correo propio (tarea 3 de la semana 5) espera esto.
 - Plan de Vercel: hoy es **Hobby (gratis)**, que según Vercel es para uso no comercial. Antes de empezar
   a cobrarle a las tiendas hay que pasar a Pro (~20 dólares al mes) u otro proveedor.
 - Correo propio (SMTP, ej. Resend) para Supabase: hace falta antes de las pruebas con tiendas.
