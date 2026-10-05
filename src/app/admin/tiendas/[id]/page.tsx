@@ -4,6 +4,7 @@ import { exigirAdmin } from "@/lib/admin";
 import { MARCA_TODAS } from "@/lib/catalogo";
 import { mostrarWhatsapp } from "@/lib/ubicacion";
 import { BotonBorrar } from "../../boton-borrar";
+import { CodigoActivacion } from "./codigo-activacion";
 import { actualizarTienda, borrarTienda } from "../acciones";
 import { FormularioTienda } from "../formulario-tienda";
 import { marcasDelCatalogo } from "../marcas";
@@ -66,6 +67,13 @@ export default async function EditarTienda({ params }: PageProps<"/admin/tiendas
           marcas: marcasTienda,
         }}
         textoBoton="Guardar cambios"
+      />
+
+      <CodigoActivacion
+        tiendaId={id}
+        nombre={tienda.nombre}
+        whatsapp={contacto?.whatsapp ?? null}
+        activa={tienda.estado === "activa"}
       />
 
       <section className="mt-10 border-t border-tinta/10 pt-6">

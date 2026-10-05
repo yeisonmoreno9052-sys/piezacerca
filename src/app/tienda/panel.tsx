@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { formatoDistancia, formatoPesos } from "@/lib/formato";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { ActivarNotificaciones } from "./activar-notificaciones";
+import { Equipo } from "./equipo";
 import { descripcion, loQueTiene, type Solicitud, useSolicitudesTienda } from "./datos";
 
 export function PanelTienda({
@@ -126,6 +127,8 @@ export function PanelTienda({
           </ul>
         </section>
       )}
+
+      <Equipo />
     </div>
   );
 }
