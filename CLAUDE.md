@@ -263,6 +263,15 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   Respondidas hoy) **+ teclas T / N** (Enter envía el precio, Esc vuelve) en la solicitud más antigua.
   `/tienda/mostrador`; el sonido se repite cada 8 s mientras haya solicitudes sin responder. La lógica de cargar
   solicitudes, tiempo real y sonido es compartida en `src/app/tienda/datos.ts` (`useSolicitudesTienda`).
+  Sonido de aviso = timbre "din-don" (cambiado el 2026-10-07: el pitido sonaba "rarito").
+- 2026-10-08 (aprobado, semana 5 tarea 1): **activación con código**. El administrador genera en la ficha de la
+  tienda un código `PC-XXXXXX` (30 días, un solo uso; regenerar invalida el anterior) y lo copia o lo envía por
+  WhatsApp. La tienda entra a `/activar`, crea su cuenta (correo + contraseña) y escribe el código: la tienda
+  queda **activa** y la persona como **dueño**. El dueño agrega empleados desde "Tu equipo" (Modo tienda) con
+  códigos `EM-XXXXXX` (48 h, un solo uso) y puede quitarlos. Máximo 10 intentos de código por hora por persona.
+  SQL: `supabase/migrations/20261008000000_activacion.sql` (`generar_codigo_activacion`, `usar_codigo`,
+  `generar_codigo_empleado`, `mi_equipo`, `quitar_empleado`). Crear cuenta manda correo de confirmación
+  mientras no haya correo propio (límite de ~2 correos por hora).
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
