@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CATEGORIAS, textoCategoria } from "@/lib/catalogo";
 import {
   agregarReciente,
@@ -11,6 +11,7 @@ import {
   useRecientes,
   useUbicacion,
 } from "@/lib/guardado-local";
+import { anotarSinResultado } from "@/lib/sin-resultado";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { guardarMiMoto } from "./acciones";
 import { SelectorUbicacion } from "./selector-ubicacion";
@@ -59,6 +60,7 @@ export function Buscador({
   const [filtroMoto, setFiltroMoto] = useState("");
   const [categoria, setCategoria] = useState<string | null>(null);
   const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const temporizadorAnotar = useRef<ReturnType<typeof setTimeout> | null>(null);
   const ultima = useRef(0);
 
   async function pedirSugerencias(texto: string) {
@@ -71,6 +73,10 @@ export function Buscador({
     const lista = (data ?? []) as Sugerencia[];
     setSugerencias(lista);
     setBuscando(false);
+    // Si dejó de escribir y no apareció nada, se anota para saber qué piezas faltan.
+    if (lista.length === 0 && texto.trim().length >= 3) {
+      temporizadorAnotar.current = setTimeout(() => anotarSinResultado("pieza", texto), 1500);
+    }
     return lista;
   }
 
@@ -78,6 +84,7 @@ export function Buscador({
     setConsulta(texto);
     setAviso(null);
     if (temporizador.current) clearTimeout(temporizador.current);
+    if (temporizadorAnotar.current) clearTimeout(temporizadorAnotar.current);
     if (texto.trim().length < 2) {
       ultima.current++;
       setSugerencias([]);
@@ -114,7 +121,10 @@ export function Buscador({
     if (temporizador.current) clearTimeout(temporizador.current);
     const lista = buscando ? await pedirSugerencias(consulta) : sugerencias;
     if (lista && lista.length > 0) elegirPieza(lista[0]);
-    else if (lista) setAviso("No encontramos esa pieza. Prueba con otro nombre o escoge una categoría.");
+    else if (lista) {
+      setAviso("No encontramos esa pieza. Prueba con otro nombre o escoge una categoría.");
+      anotarSinResultado("pieza", consulta);
+    }
   }
 
   function elegirMoto(id: number | null) {
@@ -128,6 +138,14 @@ export function Buscador({
   const filtro = filtroMoto.trim().toLowerCase();
   const motosFiltradas = motos.filter((m) => nombreMoto(m).toLowerCase().includes(filtro));
   const marcas = [...new Set(motosFiltradas.map((m) => m.marca))];
+  const motoNoEncontrada = filtro.length >= 3 && motosFiltradas.length === 0;
+
+  // Moto que no está cargada: se anota cuando deja de escribir.
+  useEffect(() => {
+    if (!motoNoEncontrada) return;
+    const t = setTimeout(() => anotarSinResultado("moto", filtro), 1500);
+    return () => clearTimeout(t);
+  }, [motoNoEncontrada, filtro]);
 
   return (
     <>
