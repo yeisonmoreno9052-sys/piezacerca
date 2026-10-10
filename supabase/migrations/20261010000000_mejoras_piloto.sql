@@ -3,7 +3,7 @@
 --   2. Privacidad: la tienda ve a qué distancia está el cliente, nunca su punto exacto.
 --   3. Búsquedas sin resultado: se guardan para saber qué piezas y motos faltan.
 --   4. Números para el administrador (pestaña "Números" en /admin).
--- Se ejecuta una sola vez en Supabase > SQL Editor. Si algo falla, no queda nada a medias.
+-- Aplicado el 2026-10-10 desde Claude con el conector de Supabase (en 4 partes). No volver a ejecutar.
 
 begin;
 
@@ -31,8 +31,10 @@ revoke execute on function public.cambiar_cerrada(uuid, boolean) from public, an
 grant execute on function public.cambiar_cerrada(uuid, boolean) to authenticated;
 
 -- `tiendas_cercanas` ahora dice si la tienda está cerrada; una tienda cerrada sale en la lista
--- pero no se le puede preguntar. Cambia lo que devuelve, por eso se borra y se vuelve a crear.
-drop function public.tiendas_cercanas(double precision, double precision, public.categoria_pieza, text);
+-- pero no se le puede preguntar. Cambia lo que devuelve, por eso la anterior se renombra
+-- (`tiendas_cercanas_anterior`, ya no se usa) y se crea de nuevo.
+alter function public.tiendas_cercanas(double precision, double precision, public.categoria_pieza, text)
+  rename to tiendas_cercanas_anterior;
 
 create function public.tiendas_cercanas(
   cliente_lat double precision,
