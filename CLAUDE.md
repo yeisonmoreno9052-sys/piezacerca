@@ -276,6 +276,18 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   que ESA tienda dio por esa pieza: primero para la misma moto, si no, para cualquier moto (últimas 300
   respuestas con "La tengo"). Nota "Último precio que diste: $ X (para esta moto, hace N días)". Sin SQL nuevo:
   se calcula en `src/app/tienda/datos.ts` con los permisos existentes (cada tienda solo lee sus respuestas).
+- 2026-10-10 (aprobado por el dueño): **mejoras antes del piloto**, SQL en
+  `supabase/migrations/20261010000000_mejoras_piloto.sql`:
+  - **"Estoy cerrado"**: `tiendas.cerrada_desde` (vacío = abierta). Cualquier usuario de la tienda (o el admin) la
+    cambia con `cambiar_cerrada(tienda, cerrada)` desde el Modo tienda o el mostrador (`src/app/tienda/abierta-cerrada.tsx`).
+    Cerrada = sale en la búsqueda como "Cerrada ahora" pero no recibe preguntas (`tiendas_cercanas` devuelve `cerrada`
+    y `puede_preguntar` es falso). No se maneja horario: se abre y se cierra a mano.
+  - **Privacidad**: la tienda nunca ve el punto exacto del cliente. `solicitud_tiendas.metros` guarda la distancia al
+    enviar, y las columnas `lat`/`lng` de `solicitudes` no se pueden leer desde la app (solo las funciones de la base de datos).
+  - **Búsquedas sin resultado**: tabla `busquedas_sin_resultado` (sin guardar quién buscó), se anotan con
+    `anotar_busqueda_sin_resultado` (`src/lib/sin-resultado.ts`) cuando una pieza o moto no aparece; solo el admin las ve.
+  - **Números**: pestaña `/admin/numeros` con `numeros_admin(dias)`: preguntas, clientes, respuestas, "Voy para allá",
+    tiempos por tienda y búsquedas sin resultado (7, 30 días o un año, hora de Colombia).
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
