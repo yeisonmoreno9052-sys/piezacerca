@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { obtenerSesion } from "@/lib/sesion";
+import { AbiertaCerrada } from "./abierta-cerrada";
 import { PanelTienda } from "./panel";
 
 export const metadata: Metadata = {
@@ -15,16 +16,15 @@ export default async function Tienda() {
   // La tienda de este usuario (puede ser dueño o empleado). Si tiene varias, se usa la primera.
   const { data: vinculo } = await supabase
     .from("usuarios_tienda")
-    .select("tienda_id, tiendas(nombre, lat, lng, estado, tiempo_promedio_respuesta_seg)")
+    .select("tienda_id, tiendas(nombre, estado, cerrada_desde, tiempo_promedio_respuesta_seg)")
     .eq("usuario_id", usuarioId)
     .limit(1)
     .maybeSingle();
 
   const tienda = vinculo?.tiendas as unknown as {
     nombre: string;
-    lat: number;
-    lng: number;
     estado: string;
+    cerrada_desde: string | null;
     tiempo_promedio_respuesta_seg: number | null;
   } | null;
 
@@ -83,7 +83,13 @@ export default async function Tienda() {
         )}
       </div>
 
-      <PanelTienda tiendaId={vinculo.tienda_id} tiendaLat={tienda.lat} tiendaLng={tienda.lng} />
+      {tienda.estado === "activa" && (
+        <div className="px-4 pt-4">
+          <AbiertaCerrada tiendaId={vinculo.tienda_id} cerradaDesde={tienda.cerrada_desde} />
+        </div>
+      )}
+
+      <PanelTienda tiendaId={vinculo.tienda_id} />
     </main>
   );
 }

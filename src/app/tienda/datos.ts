@@ -28,14 +28,6 @@ export type Solicitud = {
   respondida: boolean;
 };
 
-function metrosEntre(lat1: number, lng1: number, lat2: number, lng2: number) {
-  const r = (g: number) => (g * Math.PI) / 180;
-  const a =
-    Math.sin(r(lat2 - lat1) / 2) ** 2 +
-    Math.cos(r(lat1)) * Math.cos(r(lat2)) * Math.sin(r(lng2 - lng1) / 2) ** 2;
-  return 6371000 * 2 * Math.asin(Math.sqrt(a));
-}
-
 function uno<T>(valor: T | T[] | null | undefined): T | null {
   return Array.isArray(valor) ? (valor[0] ?? null) : (valor ?? null);
 }
@@ -54,14 +46,15 @@ export function loQueTiene(s: Solicitud) {
 }
 
 // Solicitudes de las últimas 24 horas que le llegaron a esta tienda, con sus respuestas.
-export async function cargar(tiendaId: string, tiendaLat: number, tiendaLng: number): Promise<Solicitud[]> {
+// La distancia al cliente la guarda la base de datos al enviar: la tienda nunca ve su punto exacto.
+export async function cargar(tiendaId: string): Promise<Solicitud[]> {
   const supabase = crearClienteNavegador();
   const desde = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const [{ data: envios }, { data: respuestas }, { data: historial }] = await Promise.all([
     supabase
       .from("solicitud_tiendas")
       .select(
-        "solicitud_id, enviada_en, respondida_en, va_para_alla_en, solicitudes(lat, lng, vence_en, moto_id, motos(marca, modelo, cilindraje), solicitud_items(id, cantidad, pieza_id, piezas(nombre)))",
+        "solicitud_id, enviada_en, respondida_en, va_para_alla_en, metros, solicitudes(vence_en, moto_id, motos(marca, modelo, cilindraje), solicitud_items(id, cantidad, pieza_id, piezas(nombre)))",
       )
       .eq("tienda_id", tiendaId)
       .gte("enviada_en", desde)
@@ -92,8 +85,6 @@ export async function cargar(tiendaId: string, tiendaLat: number, tiendaLng: num
   return (envios ?? []).flatMap((e) => {
     const s = uno(
       e.solicitudes as unknown as {
-        lat: number;
-        lng: number;
         vence_en: string;
         moto_id: number | null;
         motos: { marca: string; modelo: string; cilindraje: number } | null;
@@ -120,7 +111,7 @@ export async function cargar(tiendaId: string, tiendaLat: number, tiendaLng: num
         id: e.solicitud_id,
         items,
         moto: moto ? `${moto.marca} ${moto.modelo} ${moto.cilindraje}` : null,
-        metros: metrosEntre(tiendaLat, tiendaLng, s.lat, s.lng),
+        metros: e.metros ?? 0,
         enviadaEn: new Date(e.enviada_en).getTime(),
         venceEn: new Date(s.vence_en).getTime(),
         vaParaAllaEn: e.va_para_alla_en ? new Date(e.va_para_alla_en).getTime() : null,
@@ -131,7 +122,7 @@ export async function cargar(tiendaId: string, tiendaLat: number, tiendaLng: num
 }
 
 
-export function useSolicitudesTienda(tiendaId: string, tiendaLat: number, tiendaLng: number, titulo: string) {
+export function useSolicitudesTienda(tiendaId: string, titulo: string) {
   const [solicitudes, setSolicitudes] = useState<Solicitud[] | null>(null);
   const [ahora, setAhora] = useState(() => Date.now());
   const [sonido, setSonido] = useState(false);
@@ -154,15 +145,15 @@ export function useSolicitudesTienda(tiendaId: string, tiendaLat: number, tienda
   }, []);
 
   const recargar = useCallback(
-    () => cargar(tiendaId, tiendaLat, tiendaLng).then(setSolicitudes),
-    [tiendaId, tiendaLat, tiendaLng],
+    () => cargar(tiendaId).then(setSolicitudes),
+    [tiendaId],
   );
 
   // En vivo con Supabase Realtime; por si acaso, también se revisa cada 10 s.
   useEffect(() => {
     let vigente = true;
     const traer = () =>
-      cargar(tiendaId, tiendaLat, tiendaLng).then((d) => {
+      cargar(tiendaId).then((d) => {
         if (!vigente) return;
         avisarSiHayAlgoNuevo(d);
         setSolicitudes(d);
@@ -190,7 +181,7 @@ export function useSolicitudesTienda(tiendaId: string, tiendaLat: number, tienda
       document.removeEventListener("visibilitychange", volverTitulo);
       supabase.removeChannel(canal);
     };
-  }, [tiendaId, tiendaLat, tiendaLng, avisarSiHayAlgoNuevo, titulo]);
+  }, [tiendaId, avisarSiHayAlgoNuevo, titulo]);
 
   function activarSonido() {
     // Se activa con el toque de la persona: así el navegador deja sonar los avisos después.
