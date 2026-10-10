@@ -7,6 +7,7 @@ const PESTANAS = [
   { href: "/admin/motos", texto: "Motos" },
   { href: "/admin/piezas", texto: "Piezas" },
   { href: "/admin/tiendas", texto: "Tiendas" },
+  { href: "/admin/numeros", texto: "Números" },
 ];
 
 export function Pestanas() {

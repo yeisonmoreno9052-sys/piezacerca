@@ -14,7 +14,7 @@ export default async function PaginaMostrador() {
   if (!usuarioId) redirect(`/entrar?volver=${encodeURIComponent("/tienda/mostrador")}`);
 
   const { data: tienda } = tiendaId
-    ? await supabase.from("tiendas").select("nombre, lat, lng").eq("id", tiendaId).maybeSingle()
+    ? await supabase.from("tiendas").select("nombre, cerrada_desde").eq("id", tiendaId).maybeSingle()
     : { data: null };
 
   if (!tiendaId || !tienda) {
@@ -30,5 +30,5 @@ export default async function PaginaMostrador() {
     );
   }
 
-  return <Mostrador tiendaId={tiendaId} nombre={tienda.nombre} tiendaLat={tienda.lat} tiendaLng={tienda.lng} />;
+  return <Mostrador tiendaId={tiendaId} nombre={tienda.nombre} cerradaDesde={tienda.cerrada_desde} />;
 }

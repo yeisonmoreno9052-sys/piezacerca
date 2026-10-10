@@ -52,13 +52,13 @@ async function cargar(id: string): Promise<Datos | null> {
   const [{ data: s }, { data: envios }, { data: respuestas }] = await Promise.all([
     supabase
       .from("solicitudes")
-      .select("lat, lng, vence_en, motos(marca, modelo, cilindraje), solicitud_items(id, cantidad, piezas(nombre))")
+      .select("vence_en, motos(marca, modelo, cilindraje), solicitud_items(id, cantidad, piezas(nombre))")
       .eq("id", id)
       .maybeSingle(),
     supabase
       .from("solicitud_tiendas")
       .select(
-        "tienda_id, enviada_en, respondida_en, va_para_alla_en, tiendas(nombre, direccion, lat, lng, tienda_contacto(whatsapp))",
+        "tienda_id, enviada_en, respondida_en, va_para_alla_en, metros, tiendas(nombre, direccion, lat, lng, tienda_contacto(whatsapp))",
       )
       .eq("solicitud_id", id),
     supabase.from("respuestas").select("tienda_id, item_id, tiene, precio").eq("solicitud_id", id),
@@ -97,7 +97,7 @@ async function cargar(id: string): Promise<Datos | null> {
       enviadaEn: e.enviada_en,
       vaParaAlla: Boolean(e.va_para_alla_en),
       respuestas: suyas,
-      metros: metrosEntre(s.lat, s.lng, t.lat, t.lng),
+      metros: e.metros ?? 0, // la guarda la base de datos al enviar
     };
   });
 

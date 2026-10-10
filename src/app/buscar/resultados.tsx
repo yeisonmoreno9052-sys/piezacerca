@@ -17,6 +17,7 @@ export type TiendaCercana = {
   estado: "activa" | "sin_confirmar";
   distancia_m: number;
   puede_preguntar: boolean;
+  cerrada: boolean;
   tiempo_promedio_respuesta_seg: number | null;
   radio_km: number;
 };
@@ -219,7 +220,11 @@ export function Resultados({
                 Otras tiendas de la zona ({otras.length})
               </h2>
               <p className="mt-1 text-xs opacity-70">
-                Todavía no están confirmadas en PiezaCerca: no reciben preguntas por la app.
+                {!otras.some((t) => t.estado === "activa" && t.cerrada)
+                  ? "Todavía no están confirmadas en PiezaCerca: no reciben preguntas por la app."
+                  : otras.every((t) => t.estado === "activa" && t.cerrada)
+                    ? "Están cerradas ahora: no reciben preguntas por la app."
+                    : "Están cerradas ahora o todavía no están confirmadas en PiezaCerca: no reciben preguntas por la app."}
               </p>
               <ul className="mt-2 space-y-2">
                 {otras.map((t, i) => (
@@ -245,7 +250,9 @@ export function Resultados({
             />
           ) : (
             <p className="text-center text-sm opacity-80">
-              Ninguna tienda confirmada maneja esta pieza cerca de ti todavía.
+              {otras.some((t) => t.estado === "activa" && t.cerrada)
+                ? "Las tiendas que manejan esta pieza cerca de ti están cerradas ahora. Intenta más tarde."
+                : "Ninguna tienda confirmada maneja esta pieza cerca de ti todavía."}
             </p>
           )}
         </div>
@@ -275,7 +282,7 @@ function TarjetaTienda({ tienda, numero }: { tienda: TiendaCercana; numero: numb
           </span>
         ) : (
           <span className="shrink-0 rounded-full bg-tinta/10 px-3 py-1 text-xs font-bold">
-            Sin confirmar
+            {tienda.estado === "activa" && tienda.cerrada ? "Cerrada ahora" : "Sin confirmar"}
           </span>
         )}
       </div>

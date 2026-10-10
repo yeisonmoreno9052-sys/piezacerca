@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { sonarAviso } from "@/lib/aviso-sonoro";
 import { formatoPesos } from "@/lib/formato";
+import { AbiertaCerrada } from "../abierta-cerrada";
 import { descripcion, loQueTiene, useSolicitudesTienda } from "../datos";
 import { TarjetaSolicitud } from "../panel";
 
@@ -13,18 +14,14 @@ const REPETIR_CADA_MS = 8000;
 export function Mostrador({
   tiendaId,
   nombre,
-  tiendaLat,
-  tiendaLng,
+  cerradaDesde,
 }: {
   tiendaId: string;
   nombre: string;
-  tiendaLat: number;
-  tiendaLng: number;
+  cerradaDesde: string | null;
 }) {
   const { solicitudes, ahora, sonido, sonidoRef, activarSonido, recargar } = useSolicitudesTienda(
     tiendaId,
-    tiendaLat,
-    tiendaLng,
     "Mostrador · PiezaCerca",
   );
   const [completa, setCompleta] = useState(false);
@@ -81,6 +78,7 @@ export function Mostrador({
           ) : (
             <span className={`${boton} bg-white/15`}>Sonido encendido</span>
           )}
+          {!cerradaDesde && <AbiertaCerrada tiendaId={tiendaId} cerradaDesde={null} oscuro />}
           <button type="button" onClick={pantallaCompleta} className={`${boton} bg-white/15`}>
             {completa ? "Salir de pantalla completa" : "Pantalla completa"}
           </button>
@@ -89,6 +87,12 @@ export function Mostrador({
           </Link>
         </div>
       </header>
+
+      {cerradaDesde && (
+        <div className="px-6 pt-4">
+          <AbiertaCerrada tiendaId={tiendaId} cerradaDesde={cerradaDesde} />
+        </div>
+      )}
 
       {!sonido && (
         <p className="bg-ambar-suave px-6 py-2 text-sm font-semibold text-ambar">

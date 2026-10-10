@@ -7,19 +7,9 @@ import { ActivarNotificaciones } from "./activar-notificaciones";
 import { Equipo } from "./equipo";
 import { descripcion, loQueTiene, type Solicitud, useSolicitudesTienda } from "./datos";
 
-export function PanelTienda({
-  tiendaId,
-  tiendaLat,
-  tiendaLng,
-}: {
-  tiendaId: string;
-  tiendaLat: number;
-  tiendaLng: number;
-}) {
+export function PanelTienda({ tiendaId }: { tiendaId: string }) {
   const { solicitudes, ahora, sonido, activarSonido, recargar } = useSolicitudesTienda(
     tiendaId,
-    tiendaLat,
-    tiendaLng,
     "Modo tienda · PiezaCerca",
   );
 
