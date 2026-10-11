@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ActivarNotificaciones } from "@/app/activar-notificaciones";
+import { activarAudio, sonarRespuesta } from "@/lib/aviso-sonoro";
 import {
   enlaceComoLlegar,
   enlaceWhatsapp,
@@ -129,6 +131,24 @@ export function SolicitudEnVivo({ id }: { id: string }) {
   const [eligiendo, setEligiendo] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Tiendas que ya habían respondido: cuando aparece una nueva, suena el aviso (no al abrir la pantalla).
+  const yaRespondieron = useRef<Set<string> | null>(null);
+  useEffect(() => {
+    if (!datos) return;
+    const ahoraRespondieron = new Set(datos.tiendas.filter((t) => t.respuestas.size > 0).map((t) => t.id));
+    const antes = yaRespondieron.current;
+    if (antes && [...ahoraRespondieron].some((t) => !antes.has(t))) sonarRespuesta();
+    yaRespondieron.current = ahoraRespondieron;
+  }, [datos]);
+
+  // El navegador solo deja sonar después de un toque: el de "Preguntar" ya lo activó; si se recargó
+  // la página, el primer toque en cualquier parte lo vuelve a activar.
+  useEffect(() => {
+    const alTocar = () => activarAudio();
+    document.addEventListener("pointerdown", alTocar, { once: true });
+    return () => document.removeEventListener("pointerdown", alTocar);
+  }, []);
+
   const recargar = useCallback(async () => {
     setDatos(await cargar(id));
   }, [id]);
@@ -234,6 +254,12 @@ export function SolicitudEnVivo({ id }: { id: string }) {
           <p className="mt-1 text-xs opacity-70">Las respuestas aparecen aquí solas, no tienes que recargar.</p>
         )}
       </div>
+
+      {!vencida && respondieron < datos.tiendas.length && (
+        <div className="mt-3">
+          <ActivarNotificaciones para="cliente" />
+        </div>
+      )}
 
       {error && (
         <p role="alert" className="mt-3 rounded-xl bg-ambar-suave p-3 text-sm text-ambar">

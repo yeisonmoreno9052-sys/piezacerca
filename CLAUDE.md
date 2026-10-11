@@ -295,6 +295,15 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
 - 2026-10-11 (aprobado): **12 motos más** (catálogo de 32): XTZ 125, CB 110, BWS 125, AX 100, AK 125, CB 160F, TVS Sport 100,
   Apache RTR 160, Hero Eco Deluxe 100, Platino 110, Victory One 100 y Libero 125, según la investigación de ventas
   (`supabase/datos/20261011_motos_faltantes.sql`, ya aplicado). Años aproximados: confirmar con mecánicos.
+- 2026-10-11 (aprobado por el dueño): **aviso al cliente cuando una tienda responde**. Trigger `al_responder_tienda`
+  (`avisar_cliente_push`, `supabase/migrations/20261011000000_aviso_cliente.sql`) al llenarse `respondida_en`: manda por
+  `/api/push` a los celulares del cliente "Tienda X la tiene · Farola: $ 45.000 c/u", "tiene N de M · Total $ X" o
+  "respondió: no tiene". El precio solo viaja a los celulares del cliente que preguntó. En `/solicitud/[id]` el botón
+  "Avisarme cuando respondan" (`ActivarNotificaciones para="cliente"`, ahora en `src/app/activar-notificaciones.tsx`).
+  Tono propio para el cliente `sonarRespuesta()` (escogido por el dueño entre 9 opciones: un carro que pasa a toda
+  por la autopista y remata con un "pi-pi" de pito; muestras en `/mnt/project-files/piezacerca/sonidos/`) que suena con
+  la app abierta. Con la app cerrada el celular usa su propio tono de notificación
+  (límite de las apps web).
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión

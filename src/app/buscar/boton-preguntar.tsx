@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { activarAudio } from "@/lib/aviso-sonoro";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 
 // Mensajes de la base de datos (campo "hint" de enviar_solicitud) en palabras para el cliente.
@@ -31,6 +32,7 @@ export function BotonPreguntar({
   const [error, setError] = useState<string | null>(null);
 
   async function preguntar() {
+    activarAudio(); // deja listo el sonido de cuando respondan
     setEnviando(true);
     setError(null);
     const supabase = crearClienteNavegador();

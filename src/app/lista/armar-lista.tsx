@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { useMiMotoLocal, useUbicacion } from "@/lib/guardado-local";
+import { activarAudio } from "@/lib/aviso-sonoro";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { SelectorUbicacion } from "../selector-ubicacion";
 import type { ItemLista, ListaLista } from "./lista-solo-navegador";
@@ -330,6 +331,7 @@ function EditarLista({
   }
 
   async function preguntar() {
+    activarAudio(); // deja listo el sonido de cuando respondan
     setAviso(null);
     if (items.length === 0) {
       setAviso("Agrega al menos una pieza a la lista.");
