@@ -300,8 +300,9 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   `/api/push` a los celulares del cliente "Tienda X la tiene · Farola: $ 45.000 c/u", "tiene N de M · Total $ X" o
   "respondió: no tiene". El precio solo viaja a los celulares del cliente que preguntó. En `/solicitud/[id]` el botón
   "Avisarme cuando respondan" (`ActivarNotificaciones para="cliente"`, ahora en `src/app/activar-notificaciones.tsx`).
-  Tono propio para el cliente `sonarRespuesta()` (escalera que sube + "ding", dos veces, con compresor; estilo app de
-  viajes pero original) que suena con la app abierta. Con la app cerrada el celular usa su propio tono de notificación
+  Tono propio para el cliente `sonarRespuesta()` (escogido por el dueño entre 9 opciones: un carro que pasa a toda
+  por la autopista y remata con un "pi-pi" de pito; muestras en `/mnt/project-files/piezacerca/sonidos/`) que suena con
+  la app abierta. Con la app cerrada el celular usa su propio tono de notificación
   (límite de las apps web).
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
