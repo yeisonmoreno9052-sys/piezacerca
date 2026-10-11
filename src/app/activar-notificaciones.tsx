@@ -38,8 +38,31 @@ async function revisar(): Promise<Estado> {
   return suscripcion && Notification.permission === "granted" ? "activo" : "apagado";
 }
 
-// "Activar notificaciones": así la tienda recibe las solicitudes aunque tenga la app cerrada.
-export function ActivarNotificaciones() {
+// Textos según quién activa: la tienda (recibe solicitudes) o el cliente (le avisan cuando responden).
+const TEXTOS = {
+  tienda: {
+    titulo: "Recibe las solicitudes con la app cerrada",
+    explicacion: "Como WhatsApp: te suena aunque estés en otra app o con el celular guardado.",
+    boton: "Activar notificaciones",
+    activo: "Te llegan las solicitudes aunque tengas la app cerrada.",
+    borde: "border-tienda",
+    colorTitulo: "text-tienda",
+    fondoBoton: "bg-tienda",
+  },
+  cliente: {
+    titulo: "Te avisamos cuando respondan",
+    explicacion: "Puedes salir de la app o guardar el celular: te suena cuando una tienda responda.",
+    boton: "Avisarme cuando respondan",
+    activo: "Te avisamos cuando una tienda responda, aunque cierres la app.",
+    borde: "border-naranja",
+    colorTitulo: "text-tinta",
+    fondoBoton: "bg-naranja",
+  },
+};
+
+// "Activar notificaciones": la tienda recibe las solicitudes y el cliente las respuestas, aunque tengan la app cerrada.
+export function ActivarNotificaciones({ para = "tienda" }: { para?: "tienda" | "cliente" }) {
+  const textos = TEXTOS[para];
   const [estado, setEstado] = useState<Estado>("revisando");
   const [error, setError] = useState<string | null>(null);
 
@@ -84,14 +107,14 @@ export function ActivarNotificaciones() {
   if (estado === "activo") {
     return (
       <p className="rounded-2xl bg-verde-suave p-3 text-sm text-verde">
-        <strong>Notificaciones activadas en este celular.</strong> Te llegan las solicitudes aunque tengas la app cerrada.
+        <strong>Notificaciones activadas en este celular.</strong> {textos.activo}
       </p>
     );
   }
 
   return (
-    <div className="rounded-2xl border-2 border-tienda bg-white p-4">
-      <p className="font-bold text-tienda">Recibe las solicitudes con la app cerrada</p>
+    <div className={`rounded-2xl border-2 bg-white p-4 ${textos.borde}`}>
+      <p className={`font-bold ${textos.colorTitulo}`}>{textos.titulo}</p>
 
       {estado === "iphone-instalar" && (
         <p className="mt-1 text-sm">
@@ -117,14 +140,14 @@ export function ActivarNotificaciones() {
 
       {(estado === "apagado" || estado === "activando") && (
         <>
-          <p className="mt-1 text-sm">Como WhatsApp: te suena aunque estés en otra app o con el celular guardado.</p>
+          <p className="mt-1 text-sm">{textos.explicacion}</p>
           <button
             type="button"
             onClick={activar}
             disabled={estado === "activando"}
-            className="mt-3 min-h-12 w-full rounded-xl bg-tienda px-4 font-bold text-white disabled:opacity-60"
+            className={`mt-3 min-h-12 w-full rounded-xl px-4 font-bold text-white disabled:opacity-60 ${textos.fondoBoton}`}
           >
-            {estado === "activando" ? "Activando…" : "Activar notificaciones"}
+            {estado === "activando" ? "Activando…" : textos.boton}
           </button>
         </>
       )}
