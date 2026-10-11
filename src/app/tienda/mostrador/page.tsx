@@ -8,13 +8,13 @@ export const metadata: Metadata = {
   title: "Mostrador · PiezaCerca",
 };
 
-// Modo mostrador: pantalla grande para el computador de la tienda (opción A, tablero de tres columnas).
+// Modo mostrador: pantalla grande para el computador de la tienda (tablero de tres columnas, diseño "Taller de noche").
 export default async function PaginaMostrador() {
   const { supabase, usuarioId, tiendaId } = await obtenerSesion();
   if (!usuarioId) redirect(`/entrar?volver=${encodeURIComponent("/tienda/mostrador")}`);
 
   const { data: tienda } = tiendaId
-    ? await supabase.from("tiendas").select("nombre, cerrada_desde").eq("id", tiendaId).maybeSingle()
+    ? await supabase.from("tiendas").select("nombre, cerrada_desde, tiempo_promedio_respuesta_seg").eq("id", tiendaId).maybeSingle()
     : { data: null };
 
   if (!tiendaId || !tienda) {
@@ -30,5 +30,12 @@ export default async function PaginaMostrador() {
     );
   }
 
-  return <Mostrador tiendaId={tiendaId} nombre={tienda.nombre} cerradaDesde={tienda.cerrada_desde} />;
+  return (
+    <Mostrador
+      tiendaId={tiendaId}
+      nombre={tienda.nombre}
+      cerradaDesde={tienda.cerrada_desde}
+      tiempoRespuestaSeg={tienda.tiempo_promedio_respuesta_seg}
+    />
+  );
 }
