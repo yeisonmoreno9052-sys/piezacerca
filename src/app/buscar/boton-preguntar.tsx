@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { activarAvisos } from "@/app/activar-notificaciones";
 import { activarAudio } from "@/lib/aviso-sonoro";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 
@@ -33,6 +34,8 @@ export function BotonPreguntar({
 
   async function preguntar() {
     activarAudio(); // deja listo el sonido de cuando respondan
+    // Avisos automáticos cuando respondan: el navegador pregunta el permiso solo la primera vez.
+    if (typeof Notification !== "undefined" && Notification.permission !== "denied") void activarAvisos();
     setEnviando(true);
     setError(null);
     const supabase = crearClienteNavegador();

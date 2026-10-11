@@ -51,6 +51,26 @@ async function guardar(suscripcion: PushSubscription) {
   return !error;
 }
 
+// Pide el permiso (si hace falta), suscribe este celular y lo guarda para la cuenta actual.
+// Debe llamarse justo al tocar un botón: los navegadores solo preguntan el permiso después de un toque.
+export async function activarAvisos(): Promise<"activo" | "bloqueado" | "apagado" | "no-soportado" | "error"> {
+  try {
+    if (!("serviceWorker" in navigator && "PushManager" in window && "Notification" in window) || !CLAVE_PUBLICA) {
+      return "no-soportado";
+    }
+    const permiso = await Notification.requestPermission();
+    if (permiso !== "granted") return permiso === "denied" ? "bloqueado" : "apagado";
+    const registro = await navigator.serviceWorker.register("/sw.js", { scope: "/", updateViaCache: "none" });
+    await navigator.serviceWorker.ready;
+    const suscripcion =
+      (await registro.pushManager.getSubscription()) ??
+      (await registro.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: aBytes(CLAVE_PUBLICA) }));
+    return (await guardar(suscripcion)) ? "activo" : "error";
+  } catch {
+    return "error";
+  }
+}
+
 // Textos según quién activa: la tienda (recibe solicitudes) o el cliente (le avisan cuando responden).
 const TEXTOS = {
   tienda: {
@@ -90,23 +110,9 @@ export function ActivarNotificaciones({ para = "tienda" }: { para?: "tienda" | "
   async function activar() {
     setError(null);
     setEstado("activando");
-    try {
-      const permiso = await Notification.requestPermission();
-      if (permiso !== "granted") {
-        setEstado(permiso === "denied" ? "bloqueado" : "apagado");
-        return;
-      }
-      const registro = await navigator.serviceWorker.register("/sw.js", { scope: "/", updateViaCache: "none" });
-      await navigator.serviceWorker.ready;
-      const suscripcion =
-        (await registro.pushManager.getSubscription()) ??
-        (await registro.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: aBytes(CLAVE_PUBLICA) }));
-      if (!(await guardar(suscripcion))) throw new Error("no se guardó");
-      setEstado("activo");
-    } catch {
-      setEstado("apagado");
-      setError("No se pudieron activar las notificaciones. Inténtalo de nuevo.");
-    }
+    const resultado = await activarAvisos();
+    setEstado(resultado === "error" ? "apagado" : resultado);
+    if (resultado === "error") setError("No se pudieron activar las notificaciones. Inténtalo de nuevo.");
   }
 
   if (estado === "revisando") return null;

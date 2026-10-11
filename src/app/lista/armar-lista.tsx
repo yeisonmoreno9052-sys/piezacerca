@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { useMiMotoLocal, useUbicacion } from "@/lib/guardado-local";
+import { activarAvisos } from "@/app/activar-notificaciones";
 import { activarAudio } from "@/lib/aviso-sonoro";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { SelectorUbicacion } from "../selector-ubicacion";
@@ -341,6 +342,8 @@ function EditarLista({
       setPidiendoUbicacion(true);
       return;
     }
+    // Avisos automáticos cuando respondan: el navegador pregunta el permiso solo la primera vez.
+    if (typeof Notification !== "undefined" && Notification.permission !== "denied") void activarAvisos();
     if (!(await asegurarSesion())) return;
     setEnviando(true);
     const { data, error } = await crearClienteNavegador().rpc("enviar_solicitud_lista", {

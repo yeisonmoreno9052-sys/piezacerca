@@ -309,6 +309,9 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   (`supabase/migrations/20261011010000_avisos_varias_cuentas.sql`). Al abrir una pantalla con el botón de avisos, si el
   celular ya los tiene activados se guardan también para la cuenta actual. Antes el botón decía "activadas" pero los
   avisos del cliente no llegaban si el celular estaba amarrado a la cuenta de la tienda.
+  Avisos del cliente **automáticos** (pedido por el dueño): al tocar "Preguntar" (pieza o lista) se pide el permiso de
+  notificaciones la primera vez y se activan solos (`activarAvisos()`); el botón "Avisarme cuando respondan" queda solo
+  como respaldo (si se negó, si falta instalar en iPhone, etc.).
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
