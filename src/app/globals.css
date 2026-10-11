@@ -10,6 +10,7 @@
   --color-ambar: #6b4600;
   --color-ambar-suave: #fbebc8;
   --color-tienda: #123b2b;
+  --color-noche: #0c2a1e; /* fondo del modo mostrador */
 
   --font-titulo: var(--font-bricolage);
   --font-sans: var(--font-figtree);

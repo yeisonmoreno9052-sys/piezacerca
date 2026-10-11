@@ -288,6 +288,13 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
     `anotar_busqueda_sin_resultado` (`src/lib/sin-resultado.ts`) cuando una pieza o moto no aparece; solo el admin las ve.
   - **Números**: pestaña `/admin/numeros` con `numeros_admin(dias)`: preguntas, clientes, respuestas, "Voy para allá",
     tiempos por tienda y búsquedas sin resultado (7, 30 días o un año, hora de Colombia).
+- 2026-10-11 (aprobado por el dueño): **modo mostrador con diseño "Taller de noche"** (opción A de
+  https://claude.ai/artifact/1ycfvo5jrp5Rpg3CNEz4UW): fondo verde muy oscuro (`bg-noche` #0C2A1E) con una moto dibujada
+  en líneas (`src/app/tienda/mostrador/moto-fondo.tsx`), reloj grande, cuatro contadores (nuevas, vienen para acá,
+  respondidas hoy, tiempo de respuesta) y la solicitud más antigua resaltada en naranja. Mismas funciones de antes.
+- 2026-10-11 (aprobado): **12 motos más** (catálogo de 32): XTZ 125, CB 110, BWS 125, AX 100, AK 125, CB 160F, TVS Sport 100,
+  Apache RTR 160, Hero Eco Deluxe 100, Platino 110, Victory One 100 y Libero 125, según la investigación de ventas
+  (`supabase/datos/20261011_motos_faltantes.sql`, ya aplicado). Años aproximados: confirmar con mecánicos.
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
@@ -295,7 +302,10 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
 
 ## Pendiente por decidir
 
-- Lista final de motos (confirmar con mecánicos). La Yamaha Libero 125 del prototipo no está cargada.
+- Lista final de motos y sus años (confirmar con mecánicos).
+- Motos chinas / marcas nuevas (2026-10-11): plan propuesto en 3 pasos: 1) preguntar en las entrevistas qué marcas
+  llegan y qué tiendas las atienden; 2) opción "Otra marca" para el cliente y especialidad "Motos chinas" para la tienda;
+  3) equivalencias ("usa piezas de tal moto/motor") y foto de la pieza. El dueño decide después de las entrevistas.
 - Foto de la pieza (idea, fuera de la v1 hasta que el dueño decida): 1) foto adjunta a la solicitud (lo más
   simple, candidata a la semana 3 si los mecánicos la piden en el trabajo de campo); 2) foto que reconoce la
   pieza con inteligencia artificial (después); 3) búsqueda de piezas parecidas por foto (no por ahora).
