@@ -35,7 +35,20 @@ async function revisar(): Promise<Estado> {
   if (Notification.permission === "denied") return "bloqueado";
   const registro = await navigator.serviceWorker.getRegistration("/");
   const suscripcion = await registro?.pushManager.getSubscription();
-  return suscripcion && Notification.permission === "granted" ? "activo" : "apagado";
+  if (!suscripcion || Notification.permission !== "granted") return "apagado";
+  // El celular ya tiene avisos activados, quizá con otra cuenta (ej. la de la tienda):
+  // se guarda también para la cuenta actual, así le llegan sus avisos.
+  return (await guardar(suscripcion)) ? "activo" : "apagado";
+}
+
+async function guardar(suscripcion: PushSubscription) {
+  const datos = suscripcion.toJSON();
+  const { error } = await crearClienteNavegador().rpc("guardar_suscripcion_push", {
+    p_endpoint: datos.endpoint,
+    p_p256dh: datos.keys?.p256dh,
+    p_auth: datos.keys?.auth,
+  });
+  return !error;
 }
 
 // Textos según quién activa: la tienda (recibe solicitudes) o el cliente (le avisan cuando responden).
@@ -88,13 +101,7 @@ export function ActivarNotificaciones({ para = "tienda" }: { para?: "tienda" | "
       const suscripcion =
         (await registro.pushManager.getSubscription()) ??
         (await registro.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: aBytes(CLAVE_PUBLICA) }));
-      const datos = suscripcion.toJSON();
-      const { error } = await crearClienteNavegador().rpc("guardar_suscripcion_push", {
-        p_endpoint: datos.endpoint,
-        p_p256dh: datos.keys?.p256dh,
-        p_auth: datos.keys?.auth,
-      });
-      if (error) throw error;
+      if (!(await guardar(suscripcion))) throw new Error("no se guardó");
       setEstado("activo");
     } catch {
       setEstado("apagado");

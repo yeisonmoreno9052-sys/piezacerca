@@ -304,6 +304,11 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   por la autopista y remata con un "pi-pi" de pito; muestras en `/mnt/project-files/piezacerca/sonidos/`) que suena con
   la app abierta. Con la app cerrada el celular usa su propio tono de notificación
   (límite de las apps web).
+- 2026-10-11: **un celular puede recibir avisos de varias cuentas** (ej. la de la tienda y la de cliente):
+  `push_suscripciones` es única por (cuenta, celular), no solo por celular
+  (`supabase/migrations/20261011010000_avisos_varias_cuentas.sql`). Al abrir una pantalla con el botón de avisos, si el
+  celular ya los tiene activados se guardan también para la cuenta actual. Antes el botón decía "activadas" pero los
+  avisos del cliente no llegaban si el celular estaba amarrado a la cuenta de la tienda.
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
