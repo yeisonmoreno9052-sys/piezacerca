@@ -71,7 +71,8 @@ export async function activarAvisos(): Promise<"activo" | "bloqueado" | "apagado
   }
 }
 
-// Textos según quién activa: la tienda (recibe solicitudes) o el cliente (le avisan cuando responden).
+// Textos según quién activa: la tienda (recibe solicitudes), el cliente (le avisan cuando responden)
+// o el administrador (le avisan de cada pregunta).
 const TEXTOS = {
   tienda: {
     titulo: "Recibe las solicitudes con la app cerrada",
@@ -91,10 +92,19 @@ const TEXTOS = {
     colorTitulo: "text-tinta",
     fondoBoton: "bg-naranja",
   },
+  admin: {
+    titulo: "Entérate cuando alguien pregunte",
+    explicacion: "Te llega un aviso a este celular cada vez que un cliente le pregunta a las tiendas.",
+    boton: "Avisarme de cada pregunta",
+    activo: "Te avisamos cada vez que alguien pregunte, aunque cierres la app.",
+    borde: "border-tinta",
+    colorTitulo: "text-tinta",
+    fondoBoton: "bg-tinta",
+  },
 };
 
 // "Activar notificaciones": la tienda recibe las solicitudes y el cliente las respuestas, aunque tengan la app cerrada.
-export function ActivarNotificaciones({ para = "tienda" }: { para?: "tienda" | "cliente" }) {
+export function ActivarNotificaciones({ para = "tienda" }: { para?: "tienda" | "cliente" | "admin" }) {
   const textos = TEXTOS[para];
   const [estado, setEstado] = useState<Estado>("revisando");
   const [error, setError] = useState<string | null>(null);
