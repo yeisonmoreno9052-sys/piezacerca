@@ -312,6 +312,14 @@ Prototipo de referencia (7 pantallas): https://claude.ai/artifact/DWPjZor6c5SZ7H
   Avisos del cliente **automáticos** (pedido por el dueño): al tocar "Preguntar" (pieza o lista) se pide el permiso de
   notificaciones la primera vez y se activan solos (`activarAvisos()`); el botón "Avisarme cuando respondan" queda solo
   como respaldo (si se negó, si falta instalar en iPhone, etc.).
+- 2026-10-28 (pedido por el dueño): el administrador **ve cada pregunta** y **recibe un aviso** cuando alguien pregunta.
+  Pestaña `/admin/preguntas` con las últimas 50 (`ultimas_preguntas_admin(limite)`): pieza o lista, moto, hora, tiendas a las
+  que llegó y qué respondió cada una ("La tiene", "Tiene N de M", "No respondió", "Va para allá"). **No** muestra quién
+  preguntó, ni dónde está, ni precios (regla 1). Aviso push a los celulares de los administradores con el trigger de
+  sentencia `al_preguntar_avisar_admin` (`avisar_admin_push`, una vez por pregunta) en
+  `supabase/migrations/20261028000000_preguntas_admin.sql`; se activa con el botón "Avisarme de cada pregunta" de esa pestaña.
+- 2026-10-28: la app "se ponía pesada" porque Supabase gratis **pausa el proyecto tras ~7 días sin uso**. Se restauró desde
+  el conector. Si vuelve a pasar: Supabase > proyecto > Restore (no se pierden datos) o pasar a Supabase Pro.
 - 2026-09-30: el proyecto vive en `C:\Proyectos\PiezaCerca` (fuera de OneDrive, que volvía lento el desarrollo).
 - 2026-09-30: para saber quién usa la app en el servidor, usar siempre `obtenerSesion()` (`src/lib/sesion.ts`)
   o `exigirAdmin()` (`src/lib/admin.ts`): consultan una sola vez por página y verifican la sesión
